@@ -1,0 +1,229 @@
+/* === Beautified Overrides === */
+/* Shared UI typography (browser-safe stack) */
+#sidebar,
+#right-sidebar,
+#layers-container,
+#legend-items,
+.leaflet-control-layers {
+  font-family: "Segoe UI", "Trebuchet MS", Tahoma, Verdana, Arial, sans-serif;
+}
+
+/* Left sidebar typography (smaller and cleaner) */
+#sidebar .form-label,
+#sidebar label,
+#sidebar small,
+#sidebar .form-text {
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+#sidebar .form-control,
+#sidebar .form-select,
+#sidebar .btn,
+#sidebar option {
+  font-size: 0.76rem;
+  line-height: 1.2;
+}
+
+.country-filter-list {
+  max-height: 140px;
+  overflow-y: auto;
+  border: 1px solid #d5dde8;
+  border-radius: 4px;
+  background: #fff;
+  padding: 4px 6px;
+}
+.country-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0;
+  font-size: 0.75rem;
+}
+.country-filter-check {
+  margin: 0;
+}
+
+/* Sidebars */
+#sidebar, #right-sidebar {
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+  border: none;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.1);
+  transition: background 0.3s ease;
+}
+#sidebar:hover, #right-sidebar:hover {
+  background: #f1f3f5;
+}
+
+/* Scrollbars */
+#sidebar::-webkit-scrollbar,
+#right-sidebar::-webkit-scrollbar {
+  width: 10px;
+}
+#sidebar::-webkit-scrollbar-thumb,
+#right-sidebar::-webkit-scrollbar-thumb {
+  background: #3b6ea8;
+  border-radius: 8px;
+  border: 2px solid #e6edf5;
+}
+#sidebar::-webkit-scrollbar-track,
+#right-sidebar::-webkit-scrollbar-track {
+  background: #e6edf5;
+  border-radius: 8px;
+}
+#sidebar::-webkit-scrollbar-thumb:hover,
+#right-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #2f5a89;
+}
+
+/* Firefox */
+#sidebar,
+#right-sidebar {
+  scrollbar-width: auto;
+  scrollbar-color: #3b6ea8 #e6edf5;
+}
+
+/* Map title */
+#map-title {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #12324f;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(18, 50, 79, 0.2);
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  backdrop-filter: blur(4px);
+}
+
+/* Legend blocks */
+.legend-block {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 5px;
+  margin-top: 0;
+  margin-bottom: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.legend-block:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Keep layer list and legend content vertically stacked and readable */
+#layers-container .leaflet-control-layers {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+#layers-container .leaflet-control-layers-list {
+  width: 100%;
+}
+#layers-container {
+  margin-bottom: 8px;
+}
+#layers-container .leaflet-control-layers-base,
+#layers-container .leaflet-control-layers-overlays {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#layers-container .leaflet-control-layers label {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+  font-size: 0.78rem; /* UN Topo + layer names */
+}
+.layer-row-with-controls {
+  justify-content: space-between;
+}
+.layer-reorder-controls {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 6px;
+}
+.layer-reorder-btn {
+  border: 1px solid #9eb6cf;
+  background: #f5f9ff;
+  color: #27496b;
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 1;
+  padding: 1px 3px;
+  cursor: pointer;
+}
+.layer-reorder-btn:hover {
+  background: #e9f2ff;
+}
+#layers-container .leaflet-control-layers input[type="checkbox"],
+#layers-container .leaflet-control-layers input[type="radio"] {
+  margin-top: 2px;
+  flex: 0 0 auto;
+}
+
+#right-sidebar h5 {
+  font-size: 0.92rem;
+  margin-bottom: 4px;
+}
+#legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+.legend-header {
+  font-size: 0.8rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  margin-bottom: 1px;
+}
+.legend-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+}
+.legend-row span {
+  font-size: 0.75rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.legend-sym {
+  width: 15px;
+  height: 15px;
+  margin-right: 0;
+  margin-top: 2px;
+  flex: 0 0 15px;
+}
+
+/* Disclaimer */
+#disclaimer {
+  border-radius: 4px;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+  font-style: italic;
+}
+
+
+/* Footer */
+footer {
+  background: #212529;
+  color: #adb5bd;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+footer a {
+  color: #1E90FF;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}

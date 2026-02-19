@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+      <!-- Content-Security-Policy (meta tag) - tuned for production/static hosting -->
+    <meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self';
+        img-src 'self' data: https:;
+        font-src 'self';
+        connect-src 'self' https:;
+        object-src 'none';
+        frame-src 'none';
+        child-src 'none';
+        base-uri 'self';
+        form-action 'none';
+        upgrade-insecure-requests;
+      ">
+<!--Production CSP (deployment)/* To be uncommented during hosting-->
+<!--<meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self';
+        img-src 'self' data: https:;
+        font-src 'self';
+        connect-src 'self' https:;
+        object-src 'none';
+        frame-src 'none';
+        child-src 'none';
+        base-uri 'self';
+        form-action 'none';
+        upgrade-insecure-requests;
+      "> -->
+        <!--Complementary Security Headers-->
+        <!--
+        X-Content-Type-Options: nosniff
+        X-Frame-Options: DENY
+        Referrer-Policy: strict-origin-when-cross-origin
+        Permissions-Policy: geolocation=(), microphone=(), camera=(), fullscreen=(self)
+        Cross-Origin-Resource-Policy: same-origin
+        Cross-Origin-Opener-Policy: same-origin
+        Cross-Origin-Embedder-Policy: require-corp
+      -->
+        <link href="vendor/bootstrap.min.css"
+      rel="stylesheet"
+      >
+
+      <!-- Leaflet CSS -->
+      <link rel="stylesheet"
+      href="vendor/leaflet.css"
+      >
+
+      <!-- Leaflet Draw CSS -->
+      <link rel="stylesheet"
+      href="vendor/leaflet.draw.css"
+      >
+        <!-- my local styles -->
+      <link rel="stylesheet" href="baseStyle.css?v=20260218-42">
+      <link rel="stylesheet" href="beautifiedStyle.css?v=20260218-42">
+
+      <!-- Bootstrap JS -->
+      <script src="vendor/bootstrap.bundle.min.js"
+        defer></script>
+
+      <!-- Leaflet JS -->
+      <script src="vendor/leaflet.js"
+        defer></script>
+
+      <!-- Shapefile parser (pinned version) -->
+      <script src="vendor/shp.min.js"
+        defer></script>
+
+      <!-- Geostats -->
+      <script src="vendor/geostats.min.js"
+        defer></script>
+
+      <!-- Leaflet Image -->
+      <script src="vendor/leaflet-image.js"
+        defer></script>
+
+      <!-- html2canvas -->
+      <script src="vendor/html2canvas.min.js"
+        defer></script>
+
+      <!-- jsPDF -->
+      <script src="vendor/jspdf.umd.min.js"
+        defer></script>
+
+      <!-- PapaParse -->
+      <script src="vendor/papaparse.min.js"
+        defer></script>
+
+      <!-- Leaflet Draw -->
+      <script src="vendor/leaflet.draw.js"
+        defer></script>
+
+  <!-- my app -->
+  <script src="app.js?v=20260218-45" defer></script>
+  <!-- Secure upload handler -->
+    <!-- Inline script removed for CSP; handlers wired in app.js -->
+  </head>
+<body>
+  <!-- Header -->
+  <header class="fixed-top w-100">
+    <div class="d-flex align-items-center custom-blue text-white p-3">
+      <h1 id="map-title" class="h4 mb-0" contenteditable>
+        Custom Map Title
+      </h1>
+      <!-- Right-aligned links -->
+      <div class="ms-auto text-end">
+      <a href="user-manual.pdf"
+         download="User-Manual.pdf"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="text-white fw-normal me-3">
+         User manual
+      </a>
+      <a href="sample_datasets.zip"
+         download="sample datasets.zip"
+         class="text-white fw-normal me-3">
+         Sample datasets
+      </a>
+      <a href="mailto:meazanesh.alemu@un.org, nonguierma@un.org"
+         class="text-white fw-normal">
+         Contact
+      </a>
+    </div>
+
+    </div>
+  </header>
+  <!-- Sidebar for controls -->
+  <nav id="sidebar" role="complementary" aria-label="Map controls">
+    <div class="container-fluid">
+      <!-- File Upload -->
+      <div class="mb-4">
+        <label for="file-upload" class="form-label">
+          Upload GeoJSON, zipped Shapefile or CSV:
+        </label>
+        <label for="file-upload" id="custom-file-button"
+               class="btn btn-sm btn-primary w-100">
+          Choose File(s)
+        </label>
+        <input type="file" id="file-upload" accept=".geojson,.zip,.csv"  multiple class="d-none"/>
+        <small id="file-name" class="form-text text-muted"></small>
+      </div>
+
+      <!-- GeoJSON URL -->
+      <div class="mb-4">
+        <label for="geojson-url" class="form-label">
+          Add GeoJSON or CSV via URL:
+        </label>
+        <div class="input-group input-group-sm">
+          <input type="text" id="geojson-url"
+                 class="form-control" placeholder="https://…/your.geojson or your.csv"/>
+          <button class="btn btn-primary" id="add-geojson-url">
+            Add
+          </button>
+        </div>
+      </div>
+
+      <!-- Layer selector -->
+      <div class="mb-3" id="layer-select-col">
+        <label for="layer-select" class="form-label">Select Layer:</label>
+        <select id="layer-select" class="form-select form-select-sm"></select>
+      </div>
+
+      <!-- Continent filter -->
+      <div class="mb-3" id="continent-filter-col">
+        <label for="continent-filter-btn" class="form-label">Filter by Continent:</label>
+        <div class="d-flex gap-1 mb-1">
+          <button id="btnContinentAll" class="btn btn-outline-secondary btn-sm" type="button">Select all</button>
+          <button id="btnContinentClear" class="btn btn-outline-secondary btn-sm" type="button">Clear</button>
+          <button id="btnAfricaOnly" class="btn btn-outline-secondary btn-sm" type="button">Africa only</button>
+        </div>
+        <div class="dropdown" data-bs-auto-close="outside">
+          <button id="continent-filter-btn" class="btn btn-outline-secondary btn-sm dropdown-toggle w-100 text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Select continent(s)
+          </button>
+          <div id="continent-filter" class="dropdown-menu w-100 p-2 country-filter-list"></div>
+        </div>
+      </div>
+
+      <!-- Country filter -->
+      <div class="mb-3" id="country-filter-col">
+        <label for="country-filter-btn" class="form-label">Filter by Country:</label>
+        <div class="d-flex gap-1 mb-1">
+          <button id="btnCountryAll" class="btn btn-outline-secondary btn-sm" type="button">Select all</button>
+          <button id="btnCountryClear" class="btn btn-outline-secondary btn-sm" type="button">Clear</button>
+        </div>
+        <div class="dropdown" data-bs-auto-close="outside">
+          <button id="country-filter-btn" class="btn btn-outline-secondary btn-sm dropdown-toggle w-100 text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Select country(ies)
+          </button>
+          <div id="country-filter-list" class="dropdown-menu w-100 p-2 country-filter-list"></div>
+        </div>
+      </div>
+
+      <!-- Attribute selector -->
+      <div class="mb-3" id="attribute-select-col">
+        <label for="attribute-select" class="form-label">
+          Select Attribute:
+        </label>
+        <select id="attribute-select"
+                class="form-select form-select-sm"></select>
+      </div>
+
+      <!-- Classification type -->
+      <div class="mb-3" id="classification-type-col">
+        <label for="classification-type" class="form-label">
+          Classification Type:
+        </label>
+        <select id="classification-type"
+                class="form-select form-select-sm"></select>
+      </div>
+
+      <!-- Number of classes -->
+      <div class="mb-3" id="num-classes-col">
+        <label for="num-classes" class="form-label">
+          Number of Classes:
+        </label>
+        <input type="number" id="num-classes"
+               class="form-control form-control-sm"
+               value="5" min="2" max="10"/>
+      </div>
+
+      <!-- Point size -->
+      <div class="mb-3" id="point-size-col">
+        <label for="point-size" class="form-label">Point Size:</label>
+        <input type="number" id="point-size"
+               class="form-control form-control-sm"
+               value="8" min="1" max="50"/>
+      </div>
+
+      <!-- Line width -->
+      <div class="mb-3" id="line-width-col">
+        <label for="line-width" class="form-label">Line Width:</label>
+        <input type="number" id="line-width"
+               class="form-control form-control-sm"
+               value="3" min="1" max="50"/>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="d-grid gap-2">
+        <button id="btnExportImage" class="btn btn-success btn-sm">
+          Export as Image
+        </button>
+        <button id="btnExportPDF" class="btn btn-danger btn-sm">
+          Export as PDF
+        </button>
+        <button id="btnExportSVG" class="btn btn-outline-primary btn-sm">
+          Export as SVG
+        </button>
+      </div>
+    </div>
+  </nav>
+    <!-- Right Sidebar for Legend -->
+  <nav id="right-sidebar">
+    <div class="container-fluid">
+    <!-- Layers section -->
+    <h5 class="p-2 border-bottom">Layers</h5>
+    <div id="layers-container"></div>
+       <!-- Legend section -->
+    <h5 class="p-2 border-bottom mt-3">Legend</h5>
+    <div id="legend-items"></div>
+  </div>
+  </nav>
+  <!-- Map -->
+  <div id="map-container">
+    <div id="map">
+      <div id="disclaimer" class="clamp-5-lines">
+        Disclaimer: The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations. Final boundary between the Republic of Sudan and the Republic of South Sudan has not yet been determined.
+      </div>
+    </div>
+  </div>
+
+  <!-- classification table section (below the map) -->
+  <div id="table-container" class="container my-4">
+        <button id="btnToggleClassTable"
+          class="btn btn-outline-secondary mb-2">
+      Classification Table (click to collapse/expand)
+    </button>
+
+    <div id="classification-wrapper">
+      <table class="table table-bordered">
+        <thead></thead>
+        <tbody id="classification-table"></tbody>
+      </table>
+    </div>
+  </div>
+  <footer class="text-center py-2">
+    United Nations Standardized Rapid Mapping Tool Powered by GIMS/ACS/UNECA © 2025
+  </footer>
+</body>
+</html>
