@@ -1,0 +1,2719 @@
+[
+    {
+        "country":  "Afghanistan",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "AF",
+        "iso_alpha3":  "AFG",
+        "m49":  "004",
+        "aliases":  [
+                        "Afghanistan"
+                    ]
+    },
+    {
+        "country":  "Åland Islands",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "AX",
+        "iso_alpha3":  "ALA",
+        "m49":  "248",
+        "aliases":  [
+                        "Åland Islands"
+                    ]
+    },
+    {
+        "country":  "Albania",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "AL",
+        "iso_alpha3":  "ALB",
+        "m49":  "008",
+        "aliases":  [
+                        "Albania"
+                    ]
+    },
+    {
+        "country":  "Algeria",
+        "region_name":  "Africa",
+        "subregion_name":  "Northern Africa",
+        "iso_alpha2":  "DZ",
+        "iso_alpha3":  "DZA",
+        "m49":  "012",
+        "aliases":  [
+                        "Algeria"
+                    ]
+    },
+    {
+        "country":  "American Samoa",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "AS",
+        "iso_alpha3":  "ASM",
+        "m49":  "016",
+        "aliases":  [
+                        "American Samoa"
+                    ]
+    },
+    {
+        "country":  "Andorra",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "AD",
+        "iso_alpha3":  "AND",
+        "m49":  "020",
+        "aliases":  [
+                        "Andorra"
+                    ]
+    },
+    {
+        "country":  "Angola",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "AO",
+        "iso_alpha3":  "AGO",
+        "m49":  "024",
+        "aliases":  [
+                        "Angola"
+                    ]
+    },
+    {
+        "country":  "Anguilla",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "AI",
+        "iso_alpha3":  "AIA",
+        "m49":  "660",
+        "aliases":  [
+                        "Anguilla"
+                    ]
+    },
+    {
+        "country":  "Antigua and Barbuda",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "AG",
+        "iso_alpha3":  "ATG",
+        "m49":  "028",
+        "aliases":  [
+                        "Antigua and Barbuda"
+                    ]
+    },
+    {
+        "country":  "Argentina",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "AR",
+        "iso_alpha3":  "ARG",
+        "m49":  "032",
+        "aliases":  [
+                        "Argentina"
+                    ]
+    },
+    {
+        "country":  "Armenia",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "AM",
+        "iso_alpha3":  "ARM",
+        "m49":  "051",
+        "aliases":  [
+                        "Armenia"
+                    ]
+    },
+    {
+        "country":  "Aruba",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "AW",
+        "iso_alpha3":  "ABW",
+        "m49":  "533",
+        "aliases":  [
+                        "Aruba"
+                    ]
+    },
+    {
+        "country":  "Australia",
+        "region_name":  "Oceania",
+        "subregion_name":  "Australia and New Zealand",
+        "iso_alpha2":  "AU",
+        "iso_alpha3":  "AUS",
+        "m49":  "036",
+        "aliases":  [
+                        "Australia"
+                    ]
+    },
+    {
+        "country":  "Austria",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "AT",
+        "iso_alpha3":  "AUT",
+        "m49":  "040",
+        "aliases":  [
+                        "Austria"
+                    ]
+    },
+    {
+        "country":  "Azerbaijan",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "AZ",
+        "iso_alpha3":  "AZE",
+        "m49":  "031",
+        "aliases":  [
+                        "Azerbaijan"
+                    ]
+    },
+    {
+        "country":  "Bahamas",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "BS",
+        "iso_alpha3":  "BHS",
+        "m49":  "044",
+        "aliases":  [
+                        "Bahamas"
+                    ]
+    },
+    {
+        "country":  "Bahrain",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "BH",
+        "iso_alpha3":  "BHR",
+        "m49":  "048",
+        "aliases":  [
+                        "Bahrain"
+                    ]
+    },
+    {
+        "country":  "Bangladesh",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "BD",
+        "iso_alpha3":  "BGD",
+        "m49":  "050",
+        "aliases":  [
+                        "Bangladesh"
+                    ]
+    },
+    {
+        "country":  "Barbados",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "BB",
+        "iso_alpha3":  "BRB",
+        "m49":  "052",
+        "aliases":  [
+                        "Barbados"
+                    ]
+    },
+    {
+        "country":  "Belarus",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "BY",
+        "iso_alpha3":  "BLR",
+        "m49":  "112",
+        "aliases":  [
+                        "Belarus"
+                    ]
+    },
+    {
+        "country":  "Belgium",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "BE",
+        "iso_alpha3":  "BEL",
+        "m49":  "056",
+        "aliases":  [
+                        "Belgium"
+                    ]
+    },
+    {
+        "country":  "Belize",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "BZ",
+        "iso_alpha3":  "BLZ",
+        "m49":  "084",
+        "aliases":  [
+                        "Belize"
+                    ]
+    },
+    {
+        "country":  "Benin",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "BJ",
+        "iso_alpha3":  "BEN",
+        "m49":  "204",
+        "aliases":  [
+                        "Benin"
+                    ]
+    },
+    {
+        "country":  "Bermuda",
+        "region_name":  "Americas",
+        "subregion_name":  "Northern America",
+        "iso_alpha2":  "BM",
+        "iso_alpha3":  "BMU",
+        "m49":  "060",
+        "aliases":  [
+                        "Bermuda"
+                    ]
+    },
+    {
+        "country":  "Bhutan",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "BT",
+        "iso_alpha3":  "BTN",
+        "m49":  "064",
+        "aliases":  [
+                        "Bhutan"
+                    ]
+    },
+    {
+        "country":  "Bolivia (Plurinational State of)",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "BO",
+        "iso_alpha3":  "BOL",
+        "m49":  "068",
+        "aliases":  [
+                        "Bolivia (Plurinational State of)"
+                    ]
+    },
+    {
+        "country":  "Bonaire, Sint Eustatius and Saba",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "BQ",
+        "iso_alpha3":  "BES",
+        "m49":  "535",
+        "aliases":  [
+                        "Bonaire, Sint Eustatius and Saba"
+                    ]
+    },
+    {
+        "country":  "Bosnia and Herzegovina",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "BA",
+        "iso_alpha3":  "BIH",
+        "m49":  "070",
+        "aliases":  [
+                        "Bosnia and Herzegovina"
+                    ]
+    },
+    {
+        "country":  "Botswana",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "BW",
+        "iso_alpha3":  "BWA",
+        "m49":  "072",
+        "aliases":  [
+                        "Botswana"
+                    ]
+    },
+    {
+        "country":  "Bouvet Island",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "BV",
+        "iso_alpha3":  "BVT",
+        "m49":  "074",
+        "aliases":  [
+                        "Bouvet Island"
+                    ]
+    },
+    {
+        "country":  "Brazil",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "BR",
+        "iso_alpha3":  "BRA",
+        "m49":  "076",
+        "aliases":  [
+                        "Brazil"
+                    ]
+    },
+    {
+        "country":  "British Indian Ocean Territory",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "IO",
+        "iso_alpha3":  "IOT",
+        "m49":  "086",
+        "aliases":  [
+                        "British Indian Ocean Territory"
+                    ]
+    },
+    {
+        "country":  "British Virgin Islands",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "VG",
+        "iso_alpha3":  "VGB",
+        "m49":  "092",
+        "aliases":  [
+                        "British Virgin Islands"
+                    ]
+    },
+    {
+        "country":  "Brunei Darussalam",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "BN",
+        "iso_alpha3":  "BRN",
+        "m49":  "096",
+        "aliases":  [
+                        "Brunei Darussalam"
+                    ]
+    },
+    {
+        "country":  "Bulgaria",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "BG",
+        "iso_alpha3":  "BGR",
+        "m49":  "100",
+        "aliases":  [
+                        "Bulgaria"
+                    ]
+    },
+    {
+        "country":  "Burkina Faso",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "BF",
+        "iso_alpha3":  "BFA",
+        "m49":  "854",
+        "aliases":  [
+                        "Burkina Faso"
+                    ]
+    },
+    {
+        "country":  "Burundi",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "BI",
+        "iso_alpha3":  "BDI",
+        "m49":  "108",
+        "aliases":  [
+                        "Burundi"
+                    ]
+    },
+    {
+        "country":  "Cabo Verde",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "CV",
+        "iso_alpha3":  "CPV",
+        "m49":  "132",
+        "aliases":  [
+                        "Cabo Verde"
+                    ]
+    },
+    {
+        "country":  "Cambodia",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "KH",
+        "iso_alpha3":  "KHM",
+        "m49":  "116",
+        "aliases":  [
+                        "Cambodia"
+                    ]
+    },
+    {
+        "country":  "Cameroon",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "CM",
+        "iso_alpha3":  "CMR",
+        "m49":  "120",
+        "aliases":  [
+                        "Cameroon"
+                    ]
+    },
+    {
+        "country":  "Canada",
+        "region_name":  "Americas",
+        "subregion_name":  "Northern America",
+        "iso_alpha2":  "CA",
+        "iso_alpha3":  "CAN",
+        "m49":  "124",
+        "aliases":  [
+                        "Canada"
+                    ]
+    },
+    {
+        "country":  "Cayman Islands",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "KY",
+        "iso_alpha3":  "CYM",
+        "m49":  "136",
+        "aliases":  [
+                        "Cayman Islands"
+                    ]
+    },
+    {
+        "country":  "Central African Republic",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "CF",
+        "iso_alpha3":  "CAF",
+        "m49":  "140",
+        "aliases":  [
+                        "Central African Republic"
+                    ]
+    },
+    {
+        "country":  "Chad",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "TD",
+        "iso_alpha3":  "TCD",
+        "m49":  "148",
+        "aliases":  [
+                        "Chad"
+                    ]
+    },
+    {
+        "country":  "Chile",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "CL",
+        "iso_alpha3":  "CHL",
+        "m49":  "152",
+        "aliases":  [
+                        "Chile"
+                    ]
+    },
+    {
+        "country":  "China",
+        "region_name":  "Asia",
+        "subregion_name":  "Eastern Asia",
+        "iso_alpha2":  "CN",
+        "iso_alpha3":  "CHN",
+        "m49":  "156",
+        "aliases":  [
+                        "China"
+                    ]
+    },
+    {
+        "country":  "China, Hong Kong Special Administrative Region",
+        "region_name":  "Asia",
+        "subregion_name":  "Eastern Asia",
+        "iso_alpha2":  "HK",
+        "iso_alpha3":  "HKG",
+        "m49":  "344",
+        "aliases":  [
+                        "China, Hong Kong Special Administrative Region"
+                    ]
+    },
+    {
+        "country":  "China, Macao Special Administrative Region",
+        "region_name":  "Asia",
+        "subregion_name":  "Eastern Asia",
+        "iso_alpha2":  "MO",
+        "iso_alpha3":  "MAC",
+        "m49":  "446",
+        "aliases":  [
+                        "China, Macao Special Administrative Region"
+                    ]
+    },
+    {
+        "country":  "Christmas Island",
+        "region_name":  "Oceania",
+        "subregion_name":  "Australia and New Zealand",
+        "iso_alpha2":  "CX",
+        "iso_alpha3":  "CXR",
+        "m49":  "162",
+        "aliases":  [
+                        "Christmas Island"
+                    ]
+    },
+    {
+        "country":  "Cocos (Keeling) Islands",
+        "region_name":  "Oceania",
+        "subregion_name":  "Australia and New Zealand",
+        "iso_alpha2":  "CC",
+        "iso_alpha3":  "CCK",
+        "m49":  "166",
+        "aliases":  [
+                        "Cocos (Keeling) Islands"
+                    ]
+    },
+    {
+        "country":  "Colombia",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "CO",
+        "iso_alpha3":  "COL",
+        "m49":  "170",
+        "aliases":  [
+                        "Colombia"
+                    ]
+    },
+    {
+        "country":  "Comoros",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "KM",
+        "iso_alpha3":  "COM",
+        "m49":  "174",
+        "aliases":  [
+                        "Comoros"
+                    ]
+    },
+    {
+        "country":  "Congo",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "CG",
+        "iso_alpha3":  "COG",
+        "m49":  "178",
+        "aliases":  [
+                        "Congo"
+                    ]
+    },
+    {
+        "country":  "Cook Islands",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "CK",
+        "iso_alpha3":  "COK",
+        "m49":  "184",
+        "aliases":  [
+                        "Cook Islands"
+                    ]
+    },
+    {
+        "country":  "Costa Rica",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "CR",
+        "iso_alpha3":  "CRI",
+        "m49":  "188",
+        "aliases":  [
+                        "Costa Rica"
+                    ]
+    },
+    {
+        "country":  "Côte d’Ivoire",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "CI",
+        "iso_alpha3":  "CIV",
+        "m49":  "384",
+        "aliases":  [
+                        "Côte d’Ivoire"
+                    ]
+    },
+    {
+        "country":  "Croatia",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "HR",
+        "iso_alpha3":  "HRV",
+        "m49":  "191",
+        "aliases":  [
+                        "Croatia"
+                    ]
+    },
+    {
+        "country":  "Cuba",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "CU",
+        "iso_alpha3":  "CUB",
+        "m49":  "192",
+        "aliases":  [
+                        "Cuba"
+                    ]
+    },
+    {
+        "country":  "Curaçao",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "CW",
+        "iso_alpha3":  "CUW",
+        "m49":  "531",
+        "aliases":  [
+                        "Curaçao"
+                    ]
+    },
+    {
+        "country":  "Cyprus",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "CY",
+        "iso_alpha3":  "CYP",
+        "m49":  "196",
+        "aliases":  [
+                        "Cyprus"
+                    ]
+    },
+    {
+        "country":  "Czechia",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "CZ",
+        "iso_alpha3":  "CZE",
+        "m49":  "203",
+        "aliases":  [
+                        "Czechia"
+                    ]
+    },
+    {
+        "country":  "Democratic People\u0027s Republic of Korea",
+        "region_name":  "Asia",
+        "subregion_name":  "Eastern Asia",
+        "iso_alpha2":  "KP",
+        "iso_alpha3":  "PRK",
+        "m49":  "408",
+        "aliases":  [
+                        "Democratic People\u0027s Republic of Korea"
+                    ]
+    },
+    {
+        "country":  "Democratic Republic of the Congo",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "CD",
+        "iso_alpha3":  "COD",
+        "m49":  "180",
+        "aliases":  [
+                        "Democratic Republic of the Congo"
+                    ]
+    },
+    {
+        "country":  "Denmark",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "DK",
+        "iso_alpha3":  "DNK",
+        "m49":  "208",
+        "aliases":  [
+                        "Denmark"
+                    ]
+    },
+    {
+        "country":  "Djibouti",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "DJ",
+        "iso_alpha3":  "DJI",
+        "m49":  "262",
+        "aliases":  [
+                        "Djibouti"
+                    ]
+    },
+    {
+        "country":  "Dominica",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "DM",
+        "iso_alpha3":  "DMA",
+        "m49":  "212",
+        "aliases":  [
+                        "Dominica"
+                    ]
+    },
+    {
+        "country":  "Dominican Republic",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "DO",
+        "iso_alpha3":  "DOM",
+        "m49":  "214",
+        "aliases":  [
+                        "Dominican Republic"
+                    ]
+    },
+    {
+        "country":  "Ecuador",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "EC",
+        "iso_alpha3":  "ECU",
+        "m49":  "218",
+        "aliases":  [
+                        "Ecuador"
+                    ]
+    },
+    {
+        "country":  "Egypt",
+        "region_name":  "Africa",
+        "subregion_name":  "Northern Africa",
+        "iso_alpha2":  "EG",
+        "iso_alpha3":  "EGY",
+        "m49":  "818",
+        "aliases":  [
+                        "Egypt"
+                    ]
+    },
+    {
+        "country":  "El Salvador",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "SV",
+        "iso_alpha3":  "SLV",
+        "m49":  "222",
+        "aliases":  [
+                        "El Salvador"
+                    ]
+    },
+    {
+        "country":  "Equatorial Guinea",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "GQ",
+        "iso_alpha3":  "GNQ",
+        "m49":  "226",
+        "aliases":  [
+                        "Equatorial Guinea"
+                    ]
+    },
+    {
+        "country":  "Eritrea",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "ER",
+        "iso_alpha3":  "ERI",
+        "m49":  "232",
+        "aliases":  [
+                        "Eritrea"
+                    ]
+    },
+    {
+        "country":  "Estonia",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "EE",
+        "iso_alpha3":  "EST",
+        "m49":  "233",
+        "aliases":  [
+                        "Estonia"
+                    ]
+    },
+    {
+        "country":  "Eswatini",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "SZ",
+        "iso_alpha3":  "SWZ",
+        "m49":  "748",
+        "aliases":  [
+                        "Eswatini"
+                    ]
+    },
+    {
+        "country":  "Ethiopia",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "ET",
+        "iso_alpha3":  "ETH",
+        "m49":  "231",
+        "aliases":  [
+                        "Ethiopia"
+                    ]
+    },
+    {
+        "country":  "Falkland Islands (Malvinas)",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "FK",
+        "iso_alpha3":  "FLK",
+        "m49":  "238",
+        "aliases":  [
+                        "Falkland Islands (Malvinas)"
+                    ]
+    },
+    {
+        "country":  "Faroe Islands",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "FO",
+        "iso_alpha3":  "FRO",
+        "m49":  "234",
+        "aliases":  [
+                        "Faroe Islands"
+                    ]
+    },
+    {
+        "country":  "Fiji",
+        "region_name":  "Oceania",
+        "subregion_name":  "Melanesia",
+        "iso_alpha2":  "FJ",
+        "iso_alpha3":  "FJI",
+        "m49":  "242",
+        "aliases":  [
+                        "Fiji"
+                    ]
+    },
+    {
+        "country":  "Finland",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "FI",
+        "iso_alpha3":  "FIN",
+        "m49":  "246",
+        "aliases":  [
+                        "Finland"
+                    ]
+    },
+    {
+        "country":  "France",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "FR",
+        "iso_alpha3":  "FRA",
+        "m49":  "250",
+        "aliases":  [
+                        "France"
+                    ]
+    },
+    {
+        "country":  "French Guiana",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "GF",
+        "iso_alpha3":  "GUF",
+        "m49":  "254",
+        "aliases":  [
+                        "French Guiana"
+                    ]
+    },
+    {
+        "country":  "French Polynesia",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "PF",
+        "iso_alpha3":  "PYF",
+        "m49":  "258",
+        "aliases":  [
+                        "French Polynesia"
+                    ]
+    },
+    {
+        "country":  "French Southern Territories",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "TF",
+        "iso_alpha3":  "ATF",
+        "m49":  "260",
+        "aliases":  [
+                        "French Southern Territories"
+                    ]
+    },
+    {
+        "country":  "Gabon",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "GA",
+        "iso_alpha3":  "GAB",
+        "m49":  "266",
+        "aliases":  [
+                        "Gabon"
+                    ]
+    },
+    {
+        "country":  "Gambia",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "GM",
+        "iso_alpha3":  "GMB",
+        "m49":  "270",
+        "aliases":  [
+                        "Gambia"
+                    ]
+    },
+    {
+        "country":  "Georgia",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "GE",
+        "iso_alpha3":  "GEO",
+        "m49":  "268",
+        "aliases":  [
+                        "Georgia"
+                    ]
+    },
+    {
+        "country":  "Germany",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "DE",
+        "iso_alpha3":  "DEU",
+        "m49":  "276",
+        "aliases":  [
+                        "Germany"
+                    ]
+    },
+    {
+        "country":  "Ghana",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "GH",
+        "iso_alpha3":  "GHA",
+        "m49":  "288",
+        "aliases":  [
+                        "Ghana"
+                    ]
+    },
+    {
+        "country":  "Gibraltar",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "GI",
+        "iso_alpha3":  "GIB",
+        "m49":  "292",
+        "aliases":  [
+                        "Gibraltar"
+                    ]
+    },
+    {
+        "country":  "Greece",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "GR",
+        "iso_alpha3":  "GRC",
+        "m49":  "300",
+        "aliases":  [
+                        "Greece"
+                    ]
+    },
+    {
+        "country":  "Greenland",
+        "region_name":  "Americas",
+        "subregion_name":  "Northern America",
+        "iso_alpha2":  "GL",
+        "iso_alpha3":  "GRL",
+        "m49":  "304",
+        "aliases":  [
+                        "Greenland"
+                    ]
+    },
+    {
+        "country":  "Grenada",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "GD",
+        "iso_alpha3":  "GRD",
+        "m49":  "308",
+        "aliases":  [
+                        "Grenada"
+                    ]
+    },
+    {
+        "country":  "Guadeloupe",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "GP",
+        "iso_alpha3":  "GLP",
+        "m49":  "312",
+        "aliases":  [
+                        "Guadeloupe"
+                    ]
+    },
+    {
+        "country":  "Guam",
+        "region_name":  "Oceania",
+        "subregion_name":  "Micronesia",
+        "iso_alpha2":  "GU",
+        "iso_alpha3":  "GUM",
+        "m49":  "316",
+        "aliases":  [
+                        "Guam"
+                    ]
+    },
+    {
+        "country":  "Guatemala",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "GT",
+        "iso_alpha3":  "GTM",
+        "m49":  "320",
+        "aliases":  [
+                        "Guatemala"
+                    ]
+    },
+    {
+        "country":  "Guernsey",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "GG",
+        "iso_alpha3":  "GGY",
+        "m49":  "831",
+        "aliases":  [
+                        "Guernsey"
+                    ]
+    },
+    {
+        "country":  "Guinea",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "GN",
+        "iso_alpha3":  "GIN",
+        "m49":  "324",
+        "aliases":  [
+                        "Guinea"
+                    ]
+    },
+    {
+        "country":  "Guinea-Bissau",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "GW",
+        "iso_alpha3":  "GNB",
+        "m49":  "624",
+        "aliases":  [
+                        "Guinea-Bissau"
+                    ]
+    },
+    {
+        "country":  "Guyana",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "GY",
+        "iso_alpha3":  "GUY",
+        "m49":  "328",
+        "aliases":  [
+                        "Guyana"
+                    ]
+    },
+    {
+        "country":  "Haiti",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "HT",
+        "iso_alpha3":  "HTI",
+        "m49":  "332",
+        "aliases":  [
+                        "Haiti"
+                    ]
+    },
+    {
+        "country":  "Heard Island and McDonald Islands",
+        "region_name":  "Oceania",
+        "subregion_name":  "Australia and New Zealand",
+        "iso_alpha2":  "HM",
+        "iso_alpha3":  "HMD",
+        "m49":  "334",
+        "aliases":  [
+                        "Heard Island and McDonald Islands"
+                    ]
+    },
+    {
+        "country":  "Holy See",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "VA",
+        "iso_alpha3":  "VAT",
+        "m49":  "336",
+        "aliases":  [
+                        "Holy See"
+                    ]
+    },
+    {
+        "country":  "Honduras",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "HN",
+        "iso_alpha3":  "HND",
+        "m49":  "340",
+        "aliases":  [
+                        "Honduras"
+                    ]
+    },
+    {
+        "country":  "Hungary",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "HU",
+        "iso_alpha3":  "HUN",
+        "m49":  "348",
+        "aliases":  [
+                        "Hungary"
+                    ]
+    },
+    {
+        "country":  "Iceland",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "IS",
+        "iso_alpha3":  "ISL",
+        "m49":  "352",
+        "aliases":  [
+                        "Iceland"
+                    ]
+    },
+    {
+        "country":  "India",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "IN",
+        "iso_alpha3":  "IND",
+        "m49":  "356",
+        "aliases":  [
+                        "India"
+                    ]
+    },
+    {
+        "country":  "Indonesia",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "ID",
+        "iso_alpha3":  "IDN",
+        "m49":  "360",
+        "aliases":  [
+                        "Indonesia"
+                    ]
+    },
+    {
+        "country":  "Iran (Islamic Republic of)",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "IR",
+        "iso_alpha3":  "IRN",
+        "m49":  "364",
+        "aliases":  [
+                        "Iran (Islamic Republic of)"
+                    ]
+    },
+    {
+        "country":  "Iraq",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "IQ",
+        "iso_alpha3":  "IRQ",
+        "m49":  "368",
+        "aliases":  [
+                        "Iraq"
+                    ]
+    },
+    {
+        "country":  "Ireland",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "IE",
+        "iso_alpha3":  "IRL",
+        "m49":  "372",
+        "aliases":  [
+                        "Ireland"
+                    ]
+    },
+    {
+        "country":  "Isle of Man",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "IM",
+        "iso_alpha3":  "IMN",
+        "m49":  "833",
+        "aliases":  [
+                        "Isle of Man"
+                    ]
+    },
+    {
+        "country":  "Israel",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "IL",
+        "iso_alpha3":  "ISR",
+        "m49":  "376",
+        "aliases":  [
+                        "Israel"
+                    ]
+    },
+    {
+        "country":  "Italy",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "IT",
+        "iso_alpha3":  "ITA",
+        "m49":  "380",
+        "aliases":  [
+                        "Italy"
+                    ]
+    },
+    {
+        "country":  "Jamaica",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "JM",
+        "iso_alpha3":  "JAM",
+        "m49":  "388",
+        "aliases":  [
+                        "Jamaica"
+                    ]
+    },
+    {
+        "country":  "Japan",
+        "region_name":  "Asia",
+        "subregion_name":  "Eastern Asia",
+        "iso_alpha2":  "JP",
+        "iso_alpha3":  "JPN",
+        "m49":  "392",
+        "aliases":  [
+                        "Japan"
+                    ]
+    },
+    {
+        "country":  "Jersey",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "JE",
+        "iso_alpha3":  "JEY",
+        "m49":  "832",
+        "aliases":  [
+                        "Jersey"
+                    ]
+    },
+    {
+        "country":  "Jordan",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "JO",
+        "iso_alpha3":  "JOR",
+        "m49":  "400",
+        "aliases":  [
+                        "Jordan"
+                    ]
+    },
+    {
+        "country":  "Kazakhstan",
+        "region_name":  "Asia",
+        "subregion_name":  "Central Asia",
+        "iso_alpha2":  "KZ",
+        "iso_alpha3":  "KAZ",
+        "m49":  "398",
+        "aliases":  [
+                        "Kazakhstan"
+                    ]
+    },
+    {
+        "country":  "Kenya",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "KE",
+        "iso_alpha3":  "KEN",
+        "m49":  "404",
+        "aliases":  [
+                        "Kenya"
+                    ]
+    },
+    {
+        "country":  "Kiribati",
+        "region_name":  "Oceania",
+        "subregion_name":  "Micronesia",
+        "iso_alpha2":  "KI",
+        "iso_alpha3":  "KIR",
+        "m49":  "296",
+        "aliases":  [
+                        "Kiribati"
+                    ]
+    },
+    {
+        "country":  "Kuwait",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "KW",
+        "iso_alpha3":  "KWT",
+        "m49":  "414",
+        "aliases":  [
+                        "Kuwait"
+                    ]
+    },
+    {
+        "country":  "Kyrgyzstan",
+        "region_name":  "Asia",
+        "subregion_name":  "Central Asia",
+        "iso_alpha2":  "KG",
+        "iso_alpha3":  "KGZ",
+        "m49":  "417",
+        "aliases":  [
+                        "Kyrgyzstan"
+                    ]
+    },
+    {
+        "country":  "Lao People\u0027s Democratic Republic",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "LA",
+        "iso_alpha3":  "LAO",
+        "m49":  "418",
+        "aliases":  [
+                        "Lao People\u0027s Democratic Republic"
+                    ]
+    },
+    {
+        "country":  "Latvia",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "LV",
+        "iso_alpha3":  "LVA",
+        "m49":  "428",
+        "aliases":  [
+                        "Latvia"
+                    ]
+    },
+    {
+        "country":  "Lebanon",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "LB",
+        "iso_alpha3":  "LBN",
+        "m49":  "422",
+        "aliases":  [
+                        "Lebanon"
+                    ]
+    },
+    {
+        "country":  "Lesotho",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "LS",
+        "iso_alpha3":  "LSO",
+        "m49":  "426",
+        "aliases":  [
+                        "Lesotho"
+                    ]
+    },
+    {
+        "country":  "Liberia",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "LR",
+        "iso_alpha3":  "LBR",
+        "m49":  "430",
+        "aliases":  [
+                        "Liberia"
+                    ]
+    },
+    {
+        "country":  "Libya",
+        "region_name":  "Africa",
+        "subregion_name":  "Northern Africa",
+        "iso_alpha2":  "LY",
+        "iso_alpha3":  "LBY",
+        "m49":  "434",
+        "aliases":  [
+                        "Libya"
+                    ]
+    },
+    {
+        "country":  "Liechtenstein",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "LI",
+        "iso_alpha3":  "LIE",
+        "m49":  "438",
+        "aliases":  [
+                        "Liechtenstein"
+                    ]
+    },
+    {
+        "country":  "Lithuania",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "LT",
+        "iso_alpha3":  "LTU",
+        "m49":  "440",
+        "aliases":  [
+                        "Lithuania"
+                    ]
+    },
+    {
+        "country":  "Luxembourg",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "LU",
+        "iso_alpha3":  "LUX",
+        "m49":  "442",
+        "aliases":  [
+                        "Luxembourg"
+                    ]
+    },
+    {
+        "country":  "Madagascar",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "MG",
+        "iso_alpha3":  "MDG",
+        "m49":  "450",
+        "aliases":  [
+                        "Madagascar"
+                    ]
+    },
+    {
+        "country":  "Malawi",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "MW",
+        "iso_alpha3":  "MWI",
+        "m49":  "454",
+        "aliases":  [
+                        "Malawi"
+                    ]
+    },
+    {
+        "country":  "Malaysia",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "MY",
+        "iso_alpha3":  "MYS",
+        "m49":  "458",
+        "aliases":  [
+                        "Malaysia"
+                    ]
+    },
+    {
+        "country":  "Maldives",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "MV",
+        "iso_alpha3":  "MDV",
+        "m49":  "462",
+        "aliases":  [
+                        "Maldives"
+                    ]
+    },
+    {
+        "country":  "Mali",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "ML",
+        "iso_alpha3":  "MLI",
+        "m49":  "466",
+        "aliases":  [
+                        "Mali"
+                    ]
+    },
+    {
+        "country":  "Malta",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "MT",
+        "iso_alpha3":  "MLT",
+        "m49":  "470",
+        "aliases":  [
+                        "Malta"
+                    ]
+    },
+    {
+        "country":  "Marshall Islands",
+        "region_name":  "Oceania",
+        "subregion_name":  "Micronesia",
+        "iso_alpha2":  "MH",
+        "iso_alpha3":  "MHL",
+        "m49":  "584",
+        "aliases":  [
+                        "Marshall Islands"
+                    ]
+    },
+    {
+        "country":  "Martinique",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "MQ",
+        "iso_alpha3":  "MTQ",
+        "m49":  "474",
+        "aliases":  [
+                        "Martinique"
+                    ]
+    },
+    {
+        "country":  "Mauritania",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "MR",
+        "iso_alpha3":  "MRT",
+        "m49":  "478",
+        "aliases":  [
+                        "Mauritania"
+                    ]
+    },
+    {
+        "country":  "Mauritius",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "MU",
+        "iso_alpha3":  "MUS",
+        "m49":  "480",
+        "aliases":  [
+                        "Mauritius"
+                    ]
+    },
+    {
+        "country":  "Mayotte",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "YT",
+        "iso_alpha3":  "MYT",
+        "m49":  "175",
+        "aliases":  [
+                        "Mayotte"
+                    ]
+    },
+    {
+        "country":  "Mexico",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "MX",
+        "iso_alpha3":  "MEX",
+        "m49":  "484",
+        "aliases":  [
+                        "Mexico"
+                    ]
+    },
+    {
+        "country":  "Micronesia (Federated States of)",
+        "region_name":  "Oceania",
+        "subregion_name":  "Micronesia",
+        "iso_alpha2":  "FM",
+        "iso_alpha3":  "FSM",
+        "m49":  "583",
+        "aliases":  [
+                        "Micronesia (Federated States of)"
+                    ]
+    },
+    {
+        "country":  "Monaco",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "MC",
+        "iso_alpha3":  "MCO",
+        "m49":  "492",
+        "aliases":  [
+                        "Monaco"
+                    ]
+    },
+    {
+        "country":  "Mongolia",
+        "region_name":  "Asia",
+        "subregion_name":  "Eastern Asia",
+        "iso_alpha2":  "MN",
+        "iso_alpha3":  "MNG",
+        "m49":  "496",
+        "aliases":  [
+                        "Mongolia"
+                    ]
+    },
+    {
+        "country":  "Montenegro",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "ME",
+        "iso_alpha3":  "MNE",
+        "m49":  "499",
+        "aliases":  [
+                        "Montenegro"
+                    ]
+    },
+    {
+        "country":  "Montserrat",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "MS",
+        "iso_alpha3":  "MSR",
+        "m49":  "500",
+        "aliases":  [
+                        "Montserrat"
+                    ]
+    },
+    {
+        "country":  "Morocco",
+        "region_name":  "Africa",
+        "subregion_name":  "Northern Africa",
+        "iso_alpha2":  "MA",
+        "iso_alpha3":  "MAR",
+        "m49":  "504",
+        "aliases":  [
+                        "Morocco"
+                    ]
+    },
+    {
+        "country":  "Mozambique",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "MZ",
+        "iso_alpha3":  "MOZ",
+        "m49":  "508",
+        "aliases":  [
+                        "Mozambique"
+                    ]
+    },
+    {
+        "country":  "Myanmar",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "MM",
+        "iso_alpha3":  "MMR",
+        "m49":  "104",
+        "aliases":  [
+                        "Myanmar"
+                    ]
+    },
+    {
+        "country":  "Namibia",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "NA",
+        "iso_alpha3":  "NAM",
+        "m49":  "516",
+        "aliases":  [
+                        "Namibia"
+                    ]
+    },
+    {
+        "country":  "Nauru",
+        "region_name":  "Oceania",
+        "subregion_name":  "Micronesia",
+        "iso_alpha2":  "NR",
+        "iso_alpha3":  "NRU",
+        "m49":  "520",
+        "aliases":  [
+                        "Nauru"
+                    ]
+    },
+    {
+        "country":  "Nepal",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "NP",
+        "iso_alpha3":  "NPL",
+        "m49":  "524",
+        "aliases":  [
+                        "Nepal"
+                    ]
+    },
+    {
+        "country":  "Netherlands (Kingdom of the)",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "NL",
+        "iso_alpha3":  "NLD",
+        "m49":  "528",
+        "aliases":  [
+                        "Netherlands (Kingdom of the)"
+                    ]
+    },
+    {
+        "country":  "New Caledonia",
+        "region_name":  "Oceania",
+        "subregion_name":  "Melanesia",
+        "iso_alpha2":  "NC",
+        "iso_alpha3":  "NCL",
+        "m49":  "540",
+        "aliases":  [
+                        "New Caledonia"
+                    ]
+    },
+    {
+        "country":  "New Zealand",
+        "region_name":  "Oceania",
+        "subregion_name":  "Australia and New Zealand",
+        "iso_alpha2":  "NZ",
+        "iso_alpha3":  "NZL",
+        "m49":  "554",
+        "aliases":  [
+                        "New Zealand"
+                    ]
+    },
+    {
+        "country":  "Nicaragua",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "NI",
+        "iso_alpha3":  "NIC",
+        "m49":  "558",
+        "aliases":  [
+                        "Nicaragua"
+                    ]
+    },
+    {
+        "country":  "Niger",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "NE",
+        "iso_alpha3":  "NER",
+        "m49":  "562",
+        "aliases":  [
+                        "Niger"
+                    ]
+    },
+    {
+        "country":  "Nigeria",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "NG",
+        "iso_alpha3":  "NGA",
+        "m49":  "566",
+        "aliases":  [
+                        "Nigeria"
+                    ]
+    },
+    {
+        "country":  "Niue",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "NU",
+        "iso_alpha3":  "NIU",
+        "m49":  "570",
+        "aliases":  [
+                        "Niue"
+                    ]
+    },
+    {
+        "country":  "Norfolk Island",
+        "region_name":  "Oceania",
+        "subregion_name":  "Australia and New Zealand",
+        "iso_alpha2":  "NF",
+        "iso_alpha3":  "NFK",
+        "m49":  "574",
+        "aliases":  [
+                        "Norfolk Island"
+                    ]
+    },
+    {
+        "country":  "North Macedonia",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "MK",
+        "iso_alpha3":  "MKD",
+        "m49":  "807",
+        "aliases":  [
+                        "North Macedonia"
+                    ]
+    },
+    {
+        "country":  "Northern Mariana Islands",
+        "region_name":  "Oceania",
+        "subregion_name":  "Micronesia",
+        "iso_alpha2":  "MP",
+        "iso_alpha3":  "MNP",
+        "m49":  "580",
+        "aliases":  [
+                        "Northern Mariana Islands"
+                    ]
+    },
+    {
+        "country":  "Norway",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "NO",
+        "iso_alpha3":  "NOR",
+        "m49":  "578",
+        "aliases":  [
+                        "Norway"
+                    ]
+    },
+    {
+        "country":  "Oman",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "OM",
+        "iso_alpha3":  "OMN",
+        "m49":  "512",
+        "aliases":  [
+                        "Oman"
+                    ]
+    },
+    {
+        "country":  "Pakistan",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "PK",
+        "iso_alpha3":  "PAK",
+        "m49":  "586",
+        "aliases":  [
+                        "Pakistan"
+                    ]
+    },
+    {
+        "country":  "Palau",
+        "region_name":  "Oceania",
+        "subregion_name":  "Micronesia",
+        "iso_alpha2":  "PW",
+        "iso_alpha3":  "PLW",
+        "m49":  "585",
+        "aliases":  [
+                        "Palau"
+                    ]
+    },
+    {
+        "country":  "Panama",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "PA",
+        "iso_alpha3":  "PAN",
+        "m49":  "591",
+        "aliases":  [
+                        "Panama"
+                    ]
+    },
+    {
+        "country":  "Papua New Guinea",
+        "region_name":  "Oceania",
+        "subregion_name":  "Melanesia",
+        "iso_alpha2":  "PG",
+        "iso_alpha3":  "PNG",
+        "m49":  "598",
+        "aliases":  [
+                        "Papua New Guinea"
+                    ]
+    },
+    {
+        "country":  "Paraguay",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "PY",
+        "iso_alpha3":  "PRY",
+        "m49":  "600",
+        "aliases":  [
+                        "Paraguay"
+                    ]
+    },
+    {
+        "country":  "Peru",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "PE",
+        "iso_alpha3":  "PER",
+        "m49":  "604",
+        "aliases":  [
+                        "Peru"
+                    ]
+    },
+    {
+        "country":  "Philippines",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "PH",
+        "iso_alpha3":  "PHL",
+        "m49":  "608",
+        "aliases":  [
+                        "Philippines"
+                    ]
+    },
+    {
+        "country":  "Pitcairn",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "PN",
+        "iso_alpha3":  "PCN",
+        "m49":  "612",
+        "aliases":  [
+                        "Pitcairn"
+                    ]
+    },
+    {
+        "country":  "Poland",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "PL",
+        "iso_alpha3":  "POL",
+        "m49":  "616",
+        "aliases":  [
+                        "Poland"
+                    ]
+    },
+    {
+        "country":  "Portugal",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "PT",
+        "iso_alpha3":  "PRT",
+        "m49":  "620",
+        "aliases":  [
+                        "Portugal"
+                    ]
+    },
+    {
+        "country":  "Puerto Rico",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "PR",
+        "iso_alpha3":  "PRI",
+        "m49":  "630",
+        "aliases":  [
+                        "Puerto Rico"
+                    ]
+    },
+    {
+        "country":  "Qatar",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "QA",
+        "iso_alpha3":  "QAT",
+        "m49":  "634",
+        "aliases":  [
+                        "Qatar"
+                    ]
+    },
+    {
+        "country":  "Republic of Korea",
+        "region_name":  "Asia",
+        "subregion_name":  "Eastern Asia",
+        "iso_alpha2":  "KR",
+        "iso_alpha3":  "KOR",
+        "m49":  "410",
+        "aliases":  [
+                        "Republic of Korea"
+                    ]
+    },
+    {
+        "country":  "Republic of Moldova",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "MD",
+        "iso_alpha3":  "MDA",
+        "m49":  "498",
+        "aliases":  [
+                        "Republic of Moldova"
+                    ]
+    },
+    {
+        "country":  "Réunion",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "RE",
+        "iso_alpha3":  "REU",
+        "m49":  "638",
+        "aliases":  [
+                        "Réunion"
+                    ]
+    },
+    {
+        "country":  "Romania",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "RO",
+        "iso_alpha3":  "ROU",
+        "m49":  "642",
+        "aliases":  [
+                        "Romania"
+                    ]
+    },
+    {
+        "country":  "Russian Federation",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "RU",
+        "iso_alpha3":  "RUS",
+        "m49":  "643",
+        "aliases":  [
+                        "Russian Federation"
+                    ]
+    },
+    {
+        "country":  "Rwanda",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "RW",
+        "iso_alpha3":  "RWA",
+        "m49":  "646",
+        "aliases":  [
+                        "Rwanda"
+                    ]
+    },
+    {
+        "country":  "Saint Barthélemy",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "BL",
+        "iso_alpha3":  "BLM",
+        "m49":  "652",
+        "aliases":  [
+                        "Saint Barthélemy"
+                    ]
+    },
+    {
+        "country":  "Saint Helena",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "SH",
+        "iso_alpha3":  "SHN",
+        "m49":  "654",
+        "aliases":  [
+                        "Saint Helena"
+                    ]
+    },
+    {
+        "country":  "Saint Kitts and Nevis",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "KN",
+        "iso_alpha3":  "KNA",
+        "m49":  "659",
+        "aliases":  [
+                        "Saint Kitts and Nevis"
+                    ]
+    },
+    {
+        "country":  "Saint Lucia",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "LC",
+        "iso_alpha3":  "LCA",
+        "m49":  "662",
+        "aliases":  [
+                        "Saint Lucia"
+                    ]
+    },
+    {
+        "country":  "Saint Martin (French Part)",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "MF",
+        "iso_alpha3":  "MAF",
+        "m49":  "663",
+        "aliases":  [
+                        "Saint Martin (French Part)"
+                    ]
+    },
+    {
+        "country":  "Saint Pierre and Miquelon",
+        "region_name":  "Americas",
+        "subregion_name":  "Northern America",
+        "iso_alpha2":  "PM",
+        "iso_alpha3":  "SPM",
+        "m49":  "666",
+        "aliases":  [
+                        "Saint Pierre and Miquelon"
+                    ]
+    },
+    {
+        "country":  "Saint Vincent and the Grenadines",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "VC",
+        "iso_alpha3":  "VCT",
+        "m49":  "670",
+        "aliases":  [
+                        "Saint Vincent and the Grenadines"
+                    ]
+    },
+    {
+        "country":  "Samoa",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "WS",
+        "iso_alpha3":  "WSM",
+        "m49":  "882",
+        "aliases":  [
+                        "Samoa"
+                    ]
+    },
+    {
+        "country":  "San Marino",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "SM",
+        "iso_alpha3":  "SMR",
+        "m49":  "674",
+        "aliases":  [
+                        "San Marino"
+                    ]
+    },
+    {
+        "country":  "Sao Tome and Principe",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "ST",
+        "iso_alpha3":  "STP",
+        "m49":  "678",
+        "aliases":  [
+                        "Sao Tome and Principe"
+                    ]
+    },
+    {
+        "country":  "Saudi Arabia",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "SA",
+        "iso_alpha3":  "SAU",
+        "m49":  "682",
+        "aliases":  [
+                        "Saudi Arabia"
+                    ]
+    },
+    {
+        "country":  "Senegal",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "SN",
+        "iso_alpha3":  "SEN",
+        "m49":  "686",
+        "aliases":  [
+                        "Senegal"
+                    ]
+    },
+    {
+        "country":  "Serbia",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "RS",
+        "iso_alpha3":  "SRB",
+        "m49":  "688",
+        "aliases":  [
+                        "Serbia"
+                    ]
+    },
+    {
+        "country":  "Seychelles",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "SC",
+        "iso_alpha3":  "SYC",
+        "m49":  "690",
+        "aliases":  [
+                        "Seychelles"
+                    ]
+    },
+    {
+        "country":  "Sierra Leone",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "SL",
+        "iso_alpha3":  "SLE",
+        "m49":  "694",
+        "aliases":  [
+                        "Sierra Leone"
+                    ]
+    },
+    {
+        "country":  "Singapore",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "SG",
+        "iso_alpha3":  "SGP",
+        "m49":  "702",
+        "aliases":  [
+                        "Singapore"
+                    ]
+    },
+    {
+        "country":  "Sint Maarten (Dutch part)",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "SX",
+        "iso_alpha3":  "SXM",
+        "m49":  "534",
+        "aliases":  [
+                        "Sint Maarten (Dutch part)"
+                    ]
+    },
+    {
+        "country":  "Slovakia",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "SK",
+        "iso_alpha3":  "SVK",
+        "m49":  "703",
+        "aliases":  [
+                        "Slovakia"
+                    ]
+    },
+    {
+        "country":  "Slovenia",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "SI",
+        "iso_alpha3":  "SVN",
+        "m49":  "705",
+        "aliases":  [
+                        "Slovenia"
+                    ]
+    },
+    {
+        "country":  "Solomon Islands",
+        "region_name":  "Oceania",
+        "subregion_name":  "Melanesia",
+        "iso_alpha2":  "SB",
+        "iso_alpha3":  "SLB",
+        "m49":  "090",
+        "aliases":  [
+                        "Solomon Islands"
+                    ]
+    },
+    {
+        "country":  "Somalia",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "SO",
+        "iso_alpha3":  "SOM",
+        "m49":  "706",
+        "aliases":  [
+                        "Somalia"
+                    ]
+    },
+    {
+        "country":  "South Africa",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "ZA",
+        "iso_alpha3":  "ZAF",
+        "m49":  "710",
+        "aliases":  [
+                        "South Africa"
+                    ]
+    },
+    {
+        "country":  "South Georgia and the South Sandwich Islands",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "GS",
+        "iso_alpha3":  "SGS",
+        "m49":  "239",
+        "aliases":  [
+                        "South Georgia and the South Sandwich Islands"
+                    ]
+    },
+    {
+        "country":  "South Sudan",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "SS",
+        "iso_alpha3":  "SSD",
+        "m49":  "728",
+        "aliases":  [
+                        "South Sudan"
+                    ]
+    },
+    {
+        "country":  "Spain",
+        "region_name":  "Europe",
+        "subregion_name":  "Southern Europe",
+        "iso_alpha2":  "ES",
+        "iso_alpha3":  "ESP",
+        "m49":  "724",
+        "aliases":  [
+                        "Spain"
+                    ]
+    },
+    {
+        "country":  "Sri Lanka",
+        "region_name":  "Asia",
+        "subregion_name":  "Southern Asia",
+        "iso_alpha2":  "LK",
+        "iso_alpha3":  "LKA",
+        "m49":  "144",
+        "aliases":  [
+                        "Sri Lanka"
+                    ]
+    },
+    {
+        "country":  "State of Palestine",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "PS",
+        "iso_alpha3":  "PSE",
+        "m49":  "275",
+        "aliases":  [
+                        "State of Palestine"
+                    ]
+    },
+    {
+        "country":  "Sudan",
+        "region_name":  "Africa",
+        "subregion_name":  "Northern Africa",
+        "iso_alpha2":  "SD",
+        "iso_alpha3":  "SDN",
+        "m49":  "729",
+        "aliases":  [
+                        "Sudan"
+                    ]
+    },
+    {
+        "country":  "Suriname",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "SR",
+        "iso_alpha3":  "SUR",
+        "m49":  "740",
+        "aliases":  [
+                        "Suriname"
+                    ]
+    },
+    {
+        "country":  "Svalbard and Jan Mayen Islands",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "SJ",
+        "iso_alpha3":  "SJM",
+        "m49":  "744",
+        "aliases":  [
+                        "Svalbard and Jan Mayen Islands"
+                    ]
+    },
+    {
+        "country":  "Sweden",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "SE",
+        "iso_alpha3":  "SWE",
+        "m49":  "752",
+        "aliases":  [
+                        "Sweden"
+                    ]
+    },
+    {
+        "country":  "Switzerland",
+        "region_name":  "Europe",
+        "subregion_name":  "Western Europe",
+        "iso_alpha2":  "CH",
+        "iso_alpha3":  "CHE",
+        "m49":  "756",
+        "aliases":  [
+                        "Switzerland"
+                    ]
+    },
+    {
+        "country":  "Syrian Arab Republic",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "SY",
+        "iso_alpha3":  "SYR",
+        "m49":  "760",
+        "aliases":  [
+                        "Syrian Arab Republic"
+                    ]
+    },
+    {
+        "country":  "Tajikistan",
+        "region_name":  "Asia",
+        "subregion_name":  "Central Asia",
+        "iso_alpha2":  "TJ",
+        "iso_alpha3":  "TJK",
+        "m49":  "762",
+        "aliases":  [
+                        "Tajikistan"
+                    ]
+    },
+    {
+        "country":  "Thailand",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "TH",
+        "iso_alpha3":  "THA",
+        "m49":  "764",
+        "aliases":  [
+                        "Thailand"
+                    ]
+    },
+    {
+        "country":  "Timor-Leste",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "TL",
+        "iso_alpha3":  "TLS",
+        "m49":  "626",
+        "aliases":  [
+                        "Timor-Leste"
+                    ]
+    },
+    {
+        "country":  "Togo",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "TG",
+        "iso_alpha3":  "TGO",
+        "m49":  "768",
+        "aliases":  [
+                        "Togo"
+                    ]
+    },
+    {
+        "country":  "Tokelau",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "TK",
+        "iso_alpha3":  "TKL",
+        "m49":  "772",
+        "aliases":  [
+                        "Tokelau"
+                    ]
+    },
+    {
+        "country":  "Tonga",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "TO",
+        "iso_alpha3":  "TON",
+        "m49":  "776",
+        "aliases":  [
+                        "Tonga"
+                    ]
+    },
+    {
+        "country":  "Trinidad and Tobago",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "TT",
+        "iso_alpha3":  "TTO",
+        "m49":  "780",
+        "aliases":  [
+                        "Trinidad and Tobago"
+                    ]
+    },
+    {
+        "country":  "Tunisia",
+        "region_name":  "Africa",
+        "subregion_name":  "Northern Africa",
+        "iso_alpha2":  "TN",
+        "iso_alpha3":  "TUN",
+        "m49":  "788",
+        "aliases":  [
+                        "Tunisia"
+                    ]
+    },
+    {
+        "country":  "Türkiye",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "TR",
+        "iso_alpha3":  "TUR",
+        "m49":  "792",
+        "aliases":  [
+                        "Türkiye"
+                    ]
+    },
+    {
+        "country":  "Turkmenistan",
+        "region_name":  "Asia",
+        "subregion_name":  "Central Asia",
+        "iso_alpha2":  "TM",
+        "iso_alpha3":  "TKM",
+        "m49":  "795",
+        "aliases":  [
+                        "Turkmenistan"
+                    ]
+    },
+    {
+        "country":  "Turks and Caicos Islands",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "TC",
+        "iso_alpha3":  "TCA",
+        "m49":  "796",
+        "aliases":  [
+                        "Turks and Caicos Islands"
+                    ]
+    },
+    {
+        "country":  "Tuvalu",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "TV",
+        "iso_alpha3":  "TUV",
+        "m49":  "798",
+        "aliases":  [
+                        "Tuvalu"
+                    ]
+    },
+    {
+        "country":  "Uganda",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "UG",
+        "iso_alpha3":  "UGA",
+        "m49":  "800",
+        "aliases":  [
+                        "Uganda"
+                    ]
+    },
+    {
+        "country":  "Ukraine",
+        "region_name":  "Europe",
+        "subregion_name":  "Eastern Europe",
+        "iso_alpha2":  "UA",
+        "iso_alpha3":  "UKR",
+        "m49":  "804",
+        "aliases":  [
+                        "Ukraine"
+                    ]
+    },
+    {
+        "country":  "United Arab Emirates",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "AE",
+        "iso_alpha3":  "ARE",
+        "m49":  "784",
+        "aliases":  [
+                        "United Arab Emirates"
+                    ]
+    },
+    {
+        "country":  "United Kingdom of Great Britain and Northern Ireland",
+        "region_name":  "Europe",
+        "subregion_name":  "Northern Europe",
+        "iso_alpha2":  "GB",
+        "iso_alpha3":  "GBR",
+        "m49":  "826",
+        "aliases":  [
+                        "United Kingdom of Great Britain and Northern Ireland"
+                    ]
+    },
+    {
+        "country":  "United Republic of Tanzania",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "TZ",
+        "iso_alpha3":  "TZA",
+        "m49":  "834",
+        "aliases":  [
+                        "United Republic of Tanzania"
+                    ]
+    },
+    {
+        "country":  "United States Minor Outlying Islands",
+        "region_name":  "Oceania",
+        "subregion_name":  "Micronesia",
+        "iso_alpha2":  "UM",
+        "iso_alpha3":  "UMI",
+        "m49":  "581",
+        "aliases":  [
+                        "United States Minor Outlying Islands"
+                    ]
+    },
+    {
+        "country":  "United States of America",
+        "region_name":  "Americas",
+        "subregion_name":  "Northern America",
+        "iso_alpha2":  "US",
+        "iso_alpha3":  "USA",
+        "m49":  "840",
+        "aliases":  [
+                        "United States of America"
+                    ]
+    },
+    {
+        "country":  "United States Virgin Islands",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "VI",
+        "iso_alpha3":  "VIR",
+        "m49":  "850",
+        "aliases":  [
+                        "United States Virgin Islands"
+                    ]
+    },
+    {
+        "country":  "Uruguay",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "UY",
+        "iso_alpha3":  "URY",
+        "m49":  "858",
+        "aliases":  [
+                        "Uruguay"
+                    ]
+    },
+    {
+        "country":  "Uzbekistan",
+        "region_name":  "Asia",
+        "subregion_name":  "Central Asia",
+        "iso_alpha2":  "UZ",
+        "iso_alpha3":  "UZB",
+        "m49":  "860",
+        "aliases":  [
+                        "Uzbekistan"
+                    ]
+    },
+    {
+        "country":  "Vanuatu",
+        "region_name":  "Oceania",
+        "subregion_name":  "Melanesia",
+        "iso_alpha2":  "VU",
+        "iso_alpha3":  "VUT",
+        "m49":  "548",
+        "aliases":  [
+                        "Vanuatu"
+                    ]
+    },
+    {
+        "country":  "Venezuela (Bolivarian Republic of)",
+        "region_name":  "Americas",
+        "subregion_name":  "Latin America and the Caribbean",
+        "iso_alpha2":  "VE",
+        "iso_alpha3":  "VEN",
+        "m49":  "862",
+        "aliases":  [
+                        "Venezuela (Bolivarian Republic of)"
+                    ]
+    },
+    {
+        "country":  "Viet Nam",
+        "region_name":  "Asia",
+        "subregion_name":  "South-eastern Asia",
+        "iso_alpha2":  "VN",
+        "iso_alpha3":  "VNM",
+        "m49":  "704",
+        "aliases":  [
+                        "Viet Nam"
+                    ]
+    },
+    {
+        "country":  "Wallis and Futuna Islands",
+        "region_name":  "Oceania",
+        "subregion_name":  "Polynesia",
+        "iso_alpha2":  "WF",
+        "iso_alpha3":  "WLF",
+        "m49":  "876",
+        "aliases":  [
+                        "Wallis and Futuna Islands"
+                    ]
+    },
+    {
+        "country":  "Western Sahara",
+        "region_name":  "Africa",
+        "subregion_name":  "Northern Africa",
+        "iso_alpha2":  "EH",
+        "iso_alpha3":  "ESH",
+        "m49":  "732",
+        "aliases":  [
+                        "Western Sahara"
+                    ]
+    },
+    {
+        "country":  "Yemen",
+        "region_name":  "Asia",
+        "subregion_name":  "Western Asia",
+        "iso_alpha2":  "YE",
+        "iso_alpha3":  "YEM",
+        "m49":  "887",
+        "aliases":  [
+                        "Yemen"
+                    ]
+    },
+    {
+        "country":  "Zambia",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "ZM",
+        "iso_alpha3":  "ZMB",
+        "m49":  "894",
+        "aliases":  [
+                        "Zambia"
+                    ]
+    },
+    {
+        "country":  "Zimbabwe",
+        "region_name":  "Africa",
+        "subregion_name":  "Sub-Saharan Africa",
+        "iso_alpha2":  "ZW",
+        "iso_alpha3":  "ZWE",
+        "m49":  "716",
+        "aliases":  [
+                        "Zimbabwe"
+                    ]
+    }
+]
