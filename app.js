@@ -1286,9 +1286,19 @@ function fitToLayerExtent(layer) {
   const bounds = layer.getBounds();
   if (!bounds || typeof bounds.isValid !== "function" || !bounds.isValid()) return false;
   map.fitBounds(bounds, { padding: [20, 20] });
-  map.panBy([0, 10], { animate: false });
   map.panInsideBounds(MAP_NAV_BOUNDS, { animate: false });
   return true;
+}
+
+function fitToLayerExtentIfOutsideView(layer) {
+  if (!layer || typeof layer.getBounds !== "function") return false;
+  const bounds = layer.getBounds();
+  if (!bounds || typeof bounds.isValid !== "function" || !bounds.isValid()) return false;
+  const visibleBounds = (map && typeof map.getBounds === "function") ? map.getBounds() : null;
+  if (visibleBounds && typeof visibleBounds.contains === "function" && visibleBounds.contains(bounds)) {
+    return false;
+  }
+  return fitToLayerExtent(layer);
 }
 
 const HomeControl = L.Control.extend({
@@ -1929,7 +1939,7 @@ async function addImportedLayer(geojson, rawName, sourceLabel) {
     onEachFeature: bindFeaturePopup
   }).addTo(fg);
   layerGroup = fg;
-  setTimeout(() => { fitToLayerExtent(fg); }, 0);
+  setTimeout(() => { fitToLayerExtentIfOutsideView(fg); }, 0);
 
   overlayData[safeName] = { layerGroup: fg, geojson: geojson };
   layersControl.addOverlay(fg, safeName);
