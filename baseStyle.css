@@ -1,14 +1,23 @@
     :root {
       --app-header-height: 80px;
     }
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    html[data-ui-hidden="1"] {
+      display: none !important;
+    }
 
     /* Sidebar styling */
     #sidebar {
       position: absolute;
-      top: 0; left: 0;
+      top: var(--app-header-height);
+      left: 0;
       width: 250px;
-      height: calc(100vh + var(--app-header-height));
-      padding-top: calc(var(--app-header-height) + 5px);        /* space for header */
+      height: calc(100vh - var(--app-header-height));
+      padding-top: 5px;
       overflow-y: auto;
       background: #f8f9fa;
       border-right: 1px solid #ddd;
@@ -26,11 +35,11 @@
     }
     #right-sidebar {
       position: absolute;
-      top: 0;
+      top: var(--app-header-height);
       right: 0;
       width: 250px;
-      height: calc(100vh + var(--app-header-height));
-      padding-top: calc(var(--app-header-height) + 5px);   /* space for header */
+      height: calc(100vh - var(--app-header-height));
+      padding-top: 5px;
       overflow-y: auto;
       background: #f8f9fa;
       border-left: 1px solid #ddd;
@@ -38,8 +47,8 @@
     }
          /* Map container now has margins for both sidebars */
     #map-container {
-      margin-left: 250px;   /* left sidebar width */
-      margin-right: 250px;  /* right sidebar width */
+      margin-left: 200px;   /* 50px overlap under left sidebar */
+      margin-right: 200px;  /* 50px overlap under right sidebar */
       margin-top: calc(var(--app-header-height) - 5px);     /* push map down by 5px */
       height: calc(100vh - var(--app-header-height) + 5px);
       position: relative;
@@ -47,6 +56,9 @@
       clip-path: inset(0);
       isolation: isolate;
     }
+    /* Keep map controls inside the visible map window after horizontal overlap */
+    #map .leaflet-left { left: 50px; }
+    #map .leaflet-right { right: 50px; }
     #map-container,
     #map {
       overflow: hidden;
@@ -74,21 +86,24 @@
       position: absolute;
       /* anchored to bottom-left of the map container */
       top: auto;
-      left: 10px;
+      left: 62px;
       bottom: 30px;
       transform: none;
-      max-width: 24%;
+      width: 252px;
+      max-width: 40%;
+      box-sizing: border-box;
       background: rgba(255,255,255,0.90);
       padding: 5px 7px;
       font-size: 0.72em;
-      text-align: left;
+      text-align: justify;
+      text-justify: inter-word;
       max-height: 15vh; /* cap height so it doesn't cover map */
       overflow: hidden;
-      z-index: 1060;
-      pointer-events: auto;
+      z-index: 3000;
+      pointer-events: auto !important;
       user-select: none;
       -webkit-user-select: none;
-      touch-action: none;
+      touch-action: none !important;
       cursor: grab;
     }
     #disclaimer.is-dragging {
@@ -187,16 +202,24 @@ footer {
   max-width: 20%;
 }
     /* Hide selector controls by default (moved from inline attributes) */
-    #layer-select-col,
-    #attribute-select-col,
-    #continent-filter-col,
-    #country-filter-col,
-    #classification-type-col,
-    #num-classes-col,
-    #point-size-col,
-    #line-width-col {
-      display: none;
-    }
+#layer-select-col,
+#attribute-select-col,
+#continent-filter-col,
+#country-filter-col,
+#classification-type-col,
+#num-classes-col,
+#point-size-col,
+#line-width-col {
+  display: none;
+}
+
+.force-show {
+  display: block !important;
+}
+
+.force-hide {
+  display: none !important;
+}
 
 /* Export & popup classes to avoid inline styles set by JS */
 .export-wrapper {
@@ -292,13 +315,19 @@ footer {
   background-color: #ccc;
 }
 .legend-sym-line {
-  height: 3px;
+  height: 0;
+  border-top: 3px solid currentColor;
+  background-color: transparent !important;
+  margin-top: 9px;
 }
 .legend-sym-point {
   border-radius: 50%;
 }
 .legend-sym-polygon {
   border: 1px solid #333;
+}
+.popup-prewrap {
+  white-space: pre-wrap;
 }
 
 /* Control container placement class for sidebar insertion */
@@ -405,11 +434,15 @@ footer {
   position: absolute !important;
   z-index: 1200;
   margin: 0 !important;
+  transform: none !important;
   cursor: grab;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 
-.draggable-map-control:active {
+.draggable-map-control:active,
+.draggable-map-control.is-dragging {
   cursor: grabbing;
 }
 
@@ -431,24 +464,6 @@ footer {
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-bottom: 12px solid #1e3a8a;
-}
-
-#map .leaflet-bottom.leaflet-left {
-  left: auto !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  transform: translate(10px, -5px) !important; /* move right 10px, up 5px */
-}
-#map .leaflet-bottom.leaflet-left .leaflet-control {
-  margin: 0 !important;
-}
-#map .leaflet-control-scale {
-  position: relative !important;
-  right: auto !important;
-  bottom: auto !important;
-  left: auto !important;
-  margin: 0 !important;
-  transform: translateY(-5px) !important;
 }
 
 .leaflet-control-exact-scale {
@@ -473,3 +488,17 @@ footer {
   font-weight: 400;
 }
 
+.fixed-page-scale-control {
+  position: fixed !important;
+  left: calc(50% + 5px) !important;
+  bottom: 5px !important;
+  transform: translateX(-50%);
+  z-index: 2200;
+  margin: 0 !important;
+}
+
+.map-bottom-scale-control {
+  position: absolute !important;
+  z-index: 1200;
+  margin: 0 !important;
+}

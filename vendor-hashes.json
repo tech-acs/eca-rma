@@ -1,0 +1,26 @@
+{
+  "algorithm": "SHA256",
+  "generatedAt": "2026-02-26",
+  "files": {
+    "vendor/bootstrap.bundle.min.js": "aa53d582f97eb594c2a5cc5824574707f9ba9837bce3046bfa5f3556860f4e04",
+    "vendor/bootstrap.min.css": "7f1d37f0d90b6385354c2ac10e2bb91563c46bd7a266ed351222ebcac8496c2a",
+    "vendor/geostats.min.js": "06eb9db29fa8698f190e87f47fc1fd5bc117ae7e1747293385432f7a1f5404ae",
+    "vendor/html2canvas.min.js": "e87e550794322e574a1fda0c1549a3c70dae5a93d9113417a429016838eab8cb",
+    "vendor/images/layers.png": "1dbbe9d028e292f36fcba8f8b3a28d5e8932754fc2215b9ac69e4cdecf5107c6",
+    "vendor/images/layers-2x.png": "066daca850d8ffbef007af00b06eac0015728dee279c51f3cb6c716df7c42edf",
+    "vendor/images/marker-icon.png": "574c3a5cca85f4114085b6841596d62f00d7c892c7b03f28cbfa301deb1dc437",
+    "vendor/images/marker-icon-2x.png": "00179c4c1ee830d3a108412ae0d294f55776cfeb085c60129a39aa6fc4ae2528",
+    "vendor/images/marker-shadow.png": "264f5c640339f042dd729062cfc04c17f8ea0f29882b538e3848ed8f10edb4da",
+    "vendor/images/spritesheet.png": "7aefbb34fa5d9a38b37bcd2d297ae2148a365692c5eff9d4162be9d2609fcbbc",
+    "vendor/images/spritesheet.svg": "7077bae968047180921324df351d95fe2f021cdaefa01e20645162402f767da4",
+    "vendor/images/spritesheet-2x.png": "76ca9e16668b033117f69922befd93944781ed1a9ca150243d7726043fdb08b4",
+    "vendor/jspdf.umd.min.js": "98ccf17aa10c20bb1301762618fcc9b6ab3a4e7f26b6071d64d0b41154df3875",
+    "vendor/leaflet.css": "a7837102824184820dfa198d1ebcd109ff6d0ff9a2672a074b9a1b4d147d04c6",
+    "vendor/leaflet.draw.css": "5f30f74696873efee5cd7f6ab7eda7d63e5c5a3e3c3b6e0ab2068662928df31f",
+    "vendor/leaflet.draw.js": "b22a1f7385308e5adadd85a4c2d84e9fc523ebd70d37868cba0fe2387362460b",
+    "vendor/leaflet.js": "db49d009c841f5ca34a888c96511ae936fd9f5533e90d8b2c4d57596f4e5641a",
+    "vendor/leaflet-image.js": "3bea1a52386fbe87d581290e79b66b324ddbff620431f4e1a0b289262f82ac5f",
+    "vendor/papaparse.min.js": "51eeb0a26e3c4906e99b05bd40893ba72543479060dfa49eb4febb576a439317",
+    "vendor/shp.min.js": "1139d06ab0add91f00cecd5993ecf49ba257f6e7d749d76748ce3facf77cb541"
+  }
+}

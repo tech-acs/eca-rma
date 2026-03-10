@@ -1,0 +1,19 @@
+name: Vendor Integrity
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  verify-vendor:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify vendor hashes
+        shell: pwsh
+        run: ./scripts/verify-vendor-hashes.ps1

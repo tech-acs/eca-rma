@@ -28,6 +28,9 @@ No build step is required.
 - Private/internal hosts are blocked for URL imports
 - CSP and safe DOM rendering patterns are enabled in the app
 - Deploy CSP as an HTTP response header (recommended) and set `frame-ancestors 'none'` there (`frame-ancestors` is ignored in `<meta>` CSP)
+- Vendor dependency integrity is pinned in `vendor-hashes.json`
+- Verify vendor integrity locally with: `powershell -ExecutionPolicy Bypass -File .\scripts\verify-vendor-hashes.ps1`
+- Regenerate vendor hash baseline after approved library updates: `powershell -ExecutionPolicy Bypass -File .\scripts\generate-vendor-hashes.ps1`
 
 ## Repository Notes
 - `vendor/` contains local third-party dependencies used by the app

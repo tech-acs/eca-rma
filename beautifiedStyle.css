@@ -1,11 +1,21 @@
 /* === Beautified Overrides === */
-/* Shared UI typography (browser-safe stack) */
+/* Shared panel typography aligned with header title style */
 #sidebar,
+#sidebar *,
 #right-sidebar,
+#right-sidebar *,
 #layers-container,
+#layers-container *,
 #legend-items,
-.leaflet-control-layers {
-  font-family: "Segoe UI", "Trebuchet MS", Tahoma, Verdana, Arial, sans-serif;
+.leaflet-control-layers,
+.leaflet-control-layers * {
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Explicit upload area font alignment */
+#sidebar label[for="file-upload"],
+#custom-file-button {
+  font-family: "Segoe UI", sans-serif !important;
 }
 
 /* Left sidebar typography (smaller and cleaner) */
@@ -22,6 +32,37 @@
 #sidebar option {
   font-size: 0.76rem;
   line-height: 1.2;
+}
+
+/* Export buttons font */
+#btnExportImage,
+#btnExportPDF,
+#btnExportSVG {
+  font-family: "Segoe UI", sans-serif !important;
+}
+
+/* Classification controls + table font */
+#classification-type-col,
+#classification-type-col *,
+#num-classes-col,
+#num-classes-col *,
+#table-container,
+#table-container *,
+#classification-wrapper,
+#classification-wrapper *,
+#classification-table,
+#classification-table *,
+#btnToggleClassTable {
+  font-family: "Segoe UI", sans-serif !important;
+}
+
+/* Map feature popup typography */
+.leaflet-popup-content,
+.leaflet-popup-content-wrapper,
+.popup-prewrap {
+  font-family: "Segoe UI", sans-serif !important;
+  font-size: 10px !important;
+  line-height: 1.25;
 }
 
 .country-filter-list {
@@ -203,6 +244,18 @@
   margin-right: 0;
   margin-top: 2px;
   flex: 0 0 15px;
+}
+.legend-sym-line {
+  height: 0;
+  border-top: 3px solid currentColor;
+  background-color: transparent !important;
+  margin-top: 8px;
+}
+.legend-sym-point {
+  border-radius: 50%;
+}
+.legend-sym-polygon {
+  border: 1px solid #333;
 }
 
 /* Disclaimer */

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+      <link rel="icon" type="image/png" href="ECA-Banner.png">
       <!-- Content-Security-Policy (meta tag) - tuned for production/static hosting -->
     <meta http-equiv="Content-Security-Policy"
       content="
@@ -57,9 +58,10 @@
       <link rel="stylesheet"
       href="vendor/leaflet.draw.css"
       >
-        <!-- my local styles -->
-      <link rel="stylesheet" href="baseStyle.css?v=20260218-42">
-      <link rel="stylesheet" href="beautifiedStyle.css?v=20260218-42">
+      <!-- my local styles -->
+      <link rel="stylesheet" href="baseStyle.css?v=20260308-110">
+      <link rel="stylesheet" href="beautifiedStyle.css?v=20260308-110">
+      <link rel="stylesheet" href="dynamic.css?v=20260308-110">
 
       <!-- Bootstrap JS -->
       <script src="vendor/bootstrap.bundle.min.js"
@@ -98,7 +100,7 @@
         defer></script>
 
   <!-- my app -->
-  <script src="app.js?v=20260220-50" defer></script>
+  <script src="app.js?v=20260308-110" defer></script>
   <!-- Secure upload handler -->
     <!-- Inline script removed for CSP; handlers wired in app.js -->
   </head>
@@ -243,16 +245,11 @@
       </div>
 
       <!-- Action buttons -->
-      <div class="d-grid gap-2">
-        <button id="btnExportImage" class="btn btn-info btn-sm">
-          Export as PNG
-        </button>
-        <button id="btnExportPDF" class="btn btn-danger btn-sm">
-          Export as PDF
-        </button>
-        <button id="btnExportSVG" class="btn btn-warning btn-sm">
-          Export as SVG
-        </button>
+      <div class="d-flex align-items-center flex-wrap gap-2">
+        <span class="form-label mb-0">Export:</span>
+        <button id="btnExportImage" class="btn btn-info btn-sm">PNG</button>
+        <button id="btnExportPDF" class="btn btn-danger btn-sm">PDF</button>
+        <button id="btnExportSVG" class="btn btn-warning btn-sm">SVG</button>
       </div>
     </div>
   </nav>
