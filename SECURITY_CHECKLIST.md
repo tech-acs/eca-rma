@@ -3,6 +3,8 @@
 This file tracks implementation status for the UNECA Rapid Mapping security controls.
 It is intended to be audit-friendly and deployment-safe.
 
+Last updated: 2026-03-11
+
 ## Application Controls
 
 | ID | Control | Status | Evidence |
@@ -31,10 +33,23 @@ It is intended to be audit-friendly and deployment-safe.
 | 17 | `X-Content-Type-Options: nosniff` | Prepared | Defined in `web.config`; verify as response header. |
 | 18 | `Referrer-Policy` | Prepared | Defined in `web.config`; verify as response header. |
 | 19 | Cache-control for sensitive exports/data | Prepared | `no-store/no-cache` policy and IIS static cache disable are set in `web.config`. |
+| 20 | `Permissions-Policy` restrictions | Prepared | Defined in `web.config`; verify required policy tokens in response header. |
+| 21 | `Cross-Origin-Opener-Policy: same-origin` | Prepared | Defined in `web.config`; verify as response header. |
+| 22 | `Cross-Origin-Embedder-Policy: require-corp` | Prepared | Defined in `web.config`; verify as response header. |
+| 23 | `Cross-Origin-Resource-Policy: same-origin` | Prepared | Defined in `web.config`; verify as response header. |
+| 24 | `Strict-Transport-Security` (HSTS) | Prepared | Defined in `web.config`; verify on HTTPS production endpoint. |
 
 ## Verification Commands
 
 - Vendor integrity:
   - `powershell -ExecutionPolicy Bypass -File .\scripts\verify-vendor-hashes.ps1`
+- Regenerate vendor hash baseline after approved vendor updates:
+  - `powershell -ExecutionPolicy Bypass -File .\scripts\generate-vendor-hashes.ps1`
 - IIS response headers (after deployment):
   - `powershell -ExecutionPolicy Bypass -File .\scripts\verify-security-headers.ps1 -Url https://<your-host>/`
+
+## Notes
+
+- Header controls in this checklist are defined in `web.config` and are expected to be validated against the deployed endpoint.
+- The current `verify-security-headers.ps1` script validates IDs 15-23 and cache policy expectations.
+- HSTS should be verified as part of deployment validation on the final HTTPS host.

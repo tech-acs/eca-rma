@@ -827,13 +827,62 @@ function isAllowedRemoteContentType(ext, contentType) {
 function isLikelyCsvPayload(text) {
   const raw = String(text || "").trim();
   if (!raw) return false;
+  const lower = raw.toLowerCase();
+  if (lower.startsWith("{") || lower.startsWith("[") || lower.startsWith("<html") || lower.startsWith("<!doctype")) {
+    return false;
+  }
   const lines = raw.split(/\r?\n/).filter(Boolean);
   if (lines.length < 2) return false;
   const header = String(lines[0] || "").toLowerCase();
   const hasDelimiter = /,|;|\t/.test(header);
   const hasLatField = /(latitude|lat)\b/.test(header);
-  const hasLonField = /(longitude|lon|lng)\b/.test(header);
+  const hasLonField = /(longitude|lon|lng|long)\b/.test(header);
   return hasDelimiter && hasLatField && hasLonField;
+}
+
+function assertCsvPayloadLooksSafe(csvText, sourceLabel = "CSV") {
+  const raw = String(csvText || "").trim();
+  if (!raw) {
+    throw new Error(`${sourceLabel} payload is empty.`);
+  }
+
+  const lower = raw.toLowerCase();
+  if (lower.startsWith("{") || lower.startsWith("[") || lower.startsWith("<html") || lower.startsWith("<!doctype")) {
+    throw new Error(`${sourceLabel} payload does not look like CSV.`);
+  }
+
+  const firstLine = String(raw.split(/\r?\n/, 1)[0] || "");
+  if (!/,|;|\t/.test(firstLine)) {
+    throw new Error(`${sourceLabel} header must include a comma, semicolon, or tab delimiter.`);
+  }
+
+  // Use Papa preview for lightweight structural validation before full parse.
+  const preview = window.Papa.parse(raw, {
+    header: false,
+    skipEmptyLines: "greedy",
+    preview: 1
+  });
+  if (Array.isArray(preview.errors) && preview.errors.length) {
+    const firstErr = preview.errors[0];
+    throw new Error(`${sourceLabel} parse error near row ${firstErr.row ?? "?"}.`);
+  }
+
+  const headerRow = Array.isArray(preview.data) ? preview.data[0] : null;
+  const headerCells = Array.isArray(headerRow)
+    ? headerRow.map(v => String(v == null ? "" : v).trim())
+    : [];
+  if (headerCells.length < 2) {
+    throw new Error(`${sourceLabel} must contain at least 2 columns.`);
+  }
+  if (headerCells.length > 1000) {
+    throw new Error(`${sourceLabel} has too many columns (${headerCells.length}; max 1000).`);
+  }
+
+  const hasLatField = headerCells.some(v => /(latitude|lat)\b/i.test(v));
+  const hasLonField = headerCells.some(v => /(longitude|lon|lng|long)\b/i.test(v));
+  if (!hasLatField || !hasLonField) {
+    throw new Error(`${sourceLabel} must have latitude/longitude columns.`);
+  }
 }
 
 function resolveRemoteImportExtension(initialExt, finalUrl, contentType) {
@@ -2764,6 +2813,7 @@ function parseCsvToGeojson(csvText, sourceLabel = "CSV") {
   if (!window.Papa || typeof window.Papa.parse !== "function") {
     throw new Error("CSV parser is unavailable.");
   }
+  assertCsvPayloadLooksSafe(csvText, sourceLabel);
   const parsed = window.Papa.parse(csvText, {
     header: true,
     skipEmptyLines: "greedy"
@@ -2773,7 +2823,9 @@ function parseCsvToGeojson(csvText, sourceLabel = "CSV") {
     throw new Error(`${sourceLabel} parse error near row ${firstErr.row ?? "?"}.`);
   }
   const rows = Array.isArray(parsed.data) ? parsed.data : [];
-  if (!rows.length) return { type: "FeatureCollection", features: [] };
+  if (!rows.length) {
+    throw new Error(`${sourceLabel} payload is empty.`);
+  }
 
   const keys = Object.keys(rows[0] || {});
   const latKey = keys.find(k => /lat/i.test(String(k)));
