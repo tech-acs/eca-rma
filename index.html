@@ -43,7 +43,6 @@
         Permissions-Policy: geolocation=(), microphone=(), camera=(), fullscreen=(self)
         Cross-Origin-Resource-Policy: same-origin
         Cross-Origin-Opener-Policy: same-origin
-        Cross-Origin-Embedder-Policy: require-corp
       -->
         <link href="vendor/bootstrap.min.css"
       rel="stylesheet"
@@ -100,7 +99,7 @@
         defer></script>
 
   <!-- my app -->
-  <script src="app.js?v=20260308-110" defer></script>
+  <script src="app.js?v=20260907-north-arrow" defer></script>
   <!-- Secure upload handler -->
     <!-- Inline script removed for CSP; handlers wired in app.js -->
   </head>
@@ -115,17 +114,19 @@
       <div class="ms-auto text-end">
       <a href="user-manual.pdf"
          download="User-Manual.pdf"
-         target="_blank"
+        target="_self"
          rel="noopener noreferrer"
          class="text-white fw-normal me-3">
          User manual
       </a>
       <a href="sample_datasets.zip"
          download="sample datasets.zip"
+        target="_self"
          class="text-white fw-normal me-3">
          Sample datasets
       </a>
       <a href="mailto:meazanesh.alemu@un.org, nonguierma@un.org"
+        target="_self"
          class="text-white fw-normal">
          Contact
       </a>
@@ -162,6 +163,8 @@
           </button>
         </div>
       </div>
+
+      <!-- (Country CSV import is handled via the main "Choose File(s)" button) -->
 
       <!-- Layer selector -->
       <div class="mb-3" id="layer-select-col">
@@ -250,6 +253,12 @@
         <button id="btnExportImage" class="btn btn-info btn-sm">PNG</button>
         <button id="btnExportPDF" class="btn btn-danger btn-sm">PDF</button>
         <button id="btnExportSVG" class="btn btn-warning btn-sm">SVG</button>
+      </div>
+      <div class="mt-2">
+        <label for="export-capture-profile" class="form-label mb-1">Export profile:</label>
+        <select id="export-capture-profile" class="form-select form-select-sm">
+          <option value="a4-balanced" selected>A4 Balanced (fast)</option>
+        </select>
       </div>
     </div>
   </nav>

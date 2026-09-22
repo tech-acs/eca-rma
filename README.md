@@ -16,8 +16,9 @@ No build step is required.
 2. Serve the folder with any static server.
 
 ## Data Limits
-- Local upload size: `1 GB` per file
-- Remote URL import size: `512 MB`
+- Local upload size: `100 MB` per file
+- Remote URL import size: `50 MB`
+- Maximum uncompressed ZIP size: `200 MB`
 - Remote import timeout: `300 seconds`
 - Maximum features per dataset: `1,000,000`
 - Maximum vertices per dataset: `10,000,000`
@@ -47,7 +48,7 @@ Export reliability depends on data size and CORS:
 ## Coordinate System
 - Map display uses Leaflet default web map projection (Web Mercator, EPSG:3857) for tiled basemaps.
 - Imported GeoJSON and CSV coordinates should be in WGS84 geographic coordinates (EPSG:4326), using decimal degrees.
-- CSV files should provide latitude/longitude fields (for example: `lat` and `lon`, or `latitude` and `longitude`).
+- CSVs with latitude/longitude fields (for example, `lat` and `lon`, or `latitude` and `longitude`) are imported as point features. CSVs without coordinates must provide a three-letter ISO3 code field; matching rows are converted to global country polygons and all other CSV columns are available for thematic styling.
 - If source data is in another CRS/projection, reproject it to EPSG:4326 before import.
 
 ## Security Notes
@@ -57,7 +58,7 @@ Export reliability depends on data size and CORS:
 - CSP and safe DOM rendering patterns are enabled in the app
 - Deploy CSP as an HTTP response header (recommended) and set `frame-ancestors 'none'` there (`frame-ancestors` is ignored in `<meta>` CSP)
 - Vendor dependency integrity is pinned in `vendor-hashes.json`
-- Additional deployment headers are defined in `web.config`: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Embedder-Policy`, `Cross-Origin-Resource-Policy`, `Cache-Control`, and `Strict-Transport-Security`
+- Additional deployment headers are defined in `web.config`: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, `Cache-Control`, and `Strict-Transport-Security`
 
 ### Security Verification
 - Application and deployment control status is tracked in `SECURITY_CHECKLIST.md`.
