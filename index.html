@@ -112,12 +112,12 @@
       </h1>
       <!-- Right-aligned links -->
       <div class="ms-auto text-end">
-      <a href="user-manual.pdf"
-         download="User-Manual.pdf"
+      <a href="user-guide.pdf"
+         download="user-guide.pdf"
         target="_self"
          rel="noopener noreferrer"
          class="text-white fw-normal me-3">
-         User manual
+         User guide
       </a>
       <a href="sample_datasets.zip"
          download="sample datasets.zip"
@@ -257,7 +257,7 @@
       <div class="mt-2">
         <label for="export-capture-profile" class="form-label mb-1">Export profile:</label>
         <select id="export-capture-profile" class="form-select form-select-sm">
-          <option value="a4-balanced" selected>A4 Balanced (fast)</option>
+          <option value="a4-balanced" selected>A4</option>
         </select>
       </div>
     </div>
@@ -297,7 +297,23 @@
     </div>
   </div>
   <footer class="text-center py-2">
-    United Nations Standardized Rapid Mapping Tool Powered by GIMS/ACS/UNECA © 2025
+    United Nations Standardized Rapid Mapping Application | Powered by ECA © 2025
   </footer>
+
+  <!-- Unmatched ISO3 codes modal -->
+  <div id="unmatched-codes-overlay" class="unmatched-modal-overlay">
+    <div id="unmatched-codes-modal" class="unmatched-modal" role="dialog" aria-modal="true" aria-labelledby="unmatched-codes-title">
+      <div class="unmatched-modal-header">
+        <h5 id="unmatched-codes-title" class="mb-0">Unmatched ISO3 codes</h5>
+        <button type="button" id="unmatched-codes-close" class="btn-close" aria-label="Close"></button>
+      </div>
+      <p id="unmatched-codes-desc" class="unmatched-modal-desc"></p>
+      <textarea id="unmatched-codes-textarea" class="unmatched-modal-textarea form-control" readonly></textarea>
+      <div class="unmatched-modal-actions">
+        <button type="button" id="unmatched-codes-copy" class="btn btn-sm btn-primary">Copy to clipboard</button>
+        <button type="button" id="unmatched-codes-dismiss" class="btn btn-sm btn-outline-secondary">Close</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

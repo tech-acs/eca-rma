@@ -1,5 +1,5 @@
 // --- Globals & Utilities ---
-const MAX_SIZE = 100 * 1024 * 1024; // 100 MB local file limit
+const MAX_SIZE = 500 * 1024 * 1024; // 500 MB local file limit
 const MAX_FEATURES = 1000000;// adjust to device expectations
 const MAX_VERTICES = 10000000; // total coordinate points across all features
 const MAX_CSV_COLUMNS = 500;
@@ -10,7 +10,7 @@ const REMOTE_IMPORT_TIMEOUT_MS = 300000; // 300s timeout for URL imports
 const SCALE_BAR_OFFSET_X_PX = 43;
 const SCALE_BAR_OFFSET_Y_PX = 7;
 const MAX_ZIP_ENTRIES = 50;
-const MAX_ZIP_UNCOMPRESSED_BYTES = 200 * 1024 * 1024; // 200 MB expanded cap
+const MAX_ZIP_UNCOMPRESSED_BYTES = MAX_SIZE; // expanded ZIP cap matches local file limit
 const MAX_ZIP_EXPANSION_RATIO = 100; // expanded/compressed ratio
 const ALLOWED_SHAPEFILE_ZIP_EXTENSIONS = new Set([
   ".shp",
@@ -44,6 +44,17 @@ const EXPORT_CAPTURE_MIN_HEIGHT_PX = 480;
 const EXPORT_CAPTURE_MAX_HEIGHT_PX = 4096;
 const OVERLAY_POLYGON_FILL_OPACITY = 0.35;
 const OVERLAY_POINT_FILL_OPACITY = 0.55;
+
+// Renders a legend swatch at the same opacity as the on-map fill so it matches what's drawn over the basemap.
+function hexToRgbaAlpha(hex, alpha) {
+  const match = /^#([0-9A-Fa-f]{6})$/.exec(String(hex || ""));
+  if (!match) return hex;
+  const num = parseInt(match[1], 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
 const EXPORT_CAPTURE_PRESETS = {
   "a4-balanced": {
     label: "A4 Balanced (fast)",
@@ -2905,7 +2916,9 @@ function updateLegend(layerName, vals, cols, isNumeric, geojson) {
       if (symbolKind === 'line') {
         setDynamicStyle(sym, { "color": color, "background-color": "transparent" });
       } else {
-        setDynamicStyle(sym, { "background-color": color, "color": "inherit" });
+        const fillOpacity = symbolKind === 'point' ? OVERLAY_POINT_FILL_OPACITY : OVERLAY_POLYGON_FILL_OPACITY;
+        const swatchColor = /^#[0-9A-Fa-f]{6}$/.test(color) ? hexToRgbaAlpha(color, fillOpacity) : color;
+        setDynamicStyle(sym, { "background-color": swatchColor, "color": "inherit" });
       }
     } else {
       setDynamicStyle(sym, { "background-color": "#ccc" });
@@ -3114,6 +3127,13 @@ function normalizeCsvCountryCode(value, family) {
   return code;
 }
 
+function getPropertyByNormalizedKey(properties, key) {
+  if (!properties || typeof properties !== "object") return "";
+  const target = normKey(key);
+  const actualKey = Object.keys(properties).find(candidate => normKey(candidate) === target);
+  return actualKey ? properties[actualKey] : "";
+}
+
 function isUnsafeCsvPropertyKey(key) {
   const normalized = String(key || "").trim().toLowerCase();
   return normalized === "__proto__" || normalized === "prototype" || normalized === "constructor";
@@ -3162,11 +3182,16 @@ async function buildCountryPolygonsFromCsv(csvGeojson, csvInfo) {
   query.searchParams.set("f", "geojson");
   const boundaryPayload = await fetchJsonWithLimits(query.href, "UN country boundaries");
   const boundaryFeatures = Array.isArray(boundaryPayload?.features) ? boundaryPayload.features : [];
-  const boundaries = boundaryFeatures.map(feature => ({
-    country: sanitizePlainText(feature?.properties?.ROMNAM || feature?.properties?.ISO3CD || ""),
-    iso3: normalizeIsoJoinValue(feature?.properties?.ISO3CD || ""),
-    geometry: feature?.geometry || null
-  })).filter(boundary => boundary.iso3 && boundary.geometry);
+  const boundaries = boundaryFeatures.map(feature => {
+    const boundaryProperties = feature?.properties || {};
+    const iso3 = getPropertyByNormalizedKey(boundaryProperties, "ISO3CD");
+    const country = getPropertyByNormalizedKey(boundaryProperties, "ROMNAM") || iso3;
+    return {
+      country: sanitizePlainText(country),
+      iso3: normalizeIsoJoinValue(iso3),
+      geometry: feature?.geometry || null
+    };
+  }).filter(boundary => boundary.iso3 && boundary.geometry);
   const codeToCountry = new Map();
   (Array.isArray(referenceRows) ? referenceRows : []).forEach(row => {
     const code = normalizeIsoJoinValue(row?.iso3 || "");
@@ -3208,10 +3233,18 @@ async function buildCountryPolygonsFromCsv(csvGeojson, csvInfo) {
   }).filter(Boolean);
 
   if (!features.length) return null;
+  const matchedCodes = new Set(features.map(f => normalizeCsvCountryCode(f?.properties?.iso3 || "", "iso3")));
+  const boundaryUnmatchedCodes = requestedIso3.filter(code => !matchedCodes.has(code));
+  const combinedUnmatchedValues = Array.from(new Set([
+    ...(csvInfo.unmatchedIsoValues || []),
+    ...boundaryUnmatchedCodes
+  ]));
   return {
     type: "FeatureCollection",
     features,
     __rmaCsvImport: {
+      unmatchedRowCount: (csvInfo.unmatchedRowCount || 0) + boundaryUnmatchedCodes.length,
+      unmatchedIsoValues: combinedUnmatchedValues,
       valueKeys: csvInfo.valueKeys,
       preferredAttribute: csvInfo.preferredAttribute || ""
     }
@@ -3301,20 +3334,29 @@ function parseCsvToGeojson(csvText, sourceLabel = "CSV") {
   }
   const isoFamily = isoKey ? getIsoCodeFamily(isoKey) : "";
   const resolvedIsoFamily = isoKey ? "iso3" : "";
-  if (!hasCoordinates && isoKey) {
-    const invalidIso3 = rows.some(row => {
-      const value = normalizeIsoJoinValue(row?.[isoKey]);
-      return !/^[A-Z]{3}$/.test(value);
-    });
-    if (invalidIso3) {
-      throw new Error("CSV country values must be valid three-letter ISO3 codes.");
-    }
+  const validIsoRows = !hasCoordinates && isoKey
+    ? rows.filter(row => {
+        const value = normalizeIsoJoinValue(row?.[isoKey]);
+        return /^[A-Z]{3}$/.test(value);
+      })
+    : rows;
+  const unmatchedIsoValues = !hasCoordinates && isoKey
+    ? Array.from(new Set(
+        rows
+          .filter(row => !/^[A-Z]{3}$/.test(normalizeIsoJoinValue(row?.[isoKey])))
+          .map(row => String(row?.[isoKey] ?? "").trim())
+          .filter(Boolean)
+      ))
+    : [];
+
+  if (!hasCoordinates && isoKey && !validIsoRows.length) {
+    throw new Error("No CSV rows contained valid three-letter ISO3 country codes.");
   }
 
-  const features = rows.map((r, rowIdx) => {
+  const features = validIsoRows.map((r, rowIdx) => {
     if (!hasCoordinates && isoKey) {
-      const iso = sanitizePlainText(r?.[isoKey]);
-      if (!iso) return null;
+      const iso = normalizeIsoJoinValue(r?.[isoKey]);
+      if (!/^[A-Z]{3}$/.test(iso)) return null;
       return {
         type: "Feature",
         geometry: null,
@@ -3341,7 +3383,9 @@ function parseCsvToGeojson(csvText, sourceLabel = "CSV") {
       isoKey,
       isoFamily: resolvedIsoFamily,
       valueKeys: keys.filter(key => key !== isoKey),
-      preferredAttribute: chooseCsvThematicKey(rows, keys, isoKey)
+      preferredAttribute: chooseCsvThematicKey(validIsoRows, keys, isoKey),
+      unmatchedRowCount: Math.max(0, rows.length - validIsoRows.length),
+      unmatchedIsoValues
     };
   }
   return geojson;
@@ -3451,16 +3495,27 @@ async function importFile(file) {
     }
 
     if (ext === ".csv" && geojson.__rmaCsvImport) {
-      const countryGeojson = await buildCountryPolygonsFromCsv(geojson, geojson.__rmaCsvImport);
+      const csvMeta = geojson.__rmaCsvImport;
+      const countryGeojson = await buildCountryPolygonsFromCsv(geojson, csvMeta);
       if (!countryGeojson) {
         throw new Error("No CSV ISO codes matched the global country reference.");
       }
       geojson = countryGeojson;
+      const finalMeta = geojson.__rmaCsvImport || csvMeta;
+      const unmatchedCount = Number(finalMeta.unmatchedRowCount || 0);
+      const unmatchedValues = Array.isArray(finalMeta.unmatchedIsoValues) ? finalMeta.unmatchedIsoValues : [];
+      if (unmatchedCount > 0) {
+        showUnmatchedCodesModal(unmatchedValues, geojson.features.length);
+      } else {
+        showPopup("Mapped valid ISO3 rows successfully.", "success");
+      }
     }
 
     const safeName = await addImportedLayer(geojson, file.name, "Imported file");
     if (fileNameEl) fileNameEl.textContent = safeName;
-    showPopup(`File "${safeName}" uploaded successfully`, "success");
+    if (!ext || ext !== ".csv") {
+      showPopup(`File "${safeName}" uploaded successfully`, "success");
+    }
   } finally {
     hideLoading();
   }
@@ -3489,17 +3544,28 @@ async function importUrl(rawUrl) {
     const fallbackName = parsed.pathname.split("/").pop() || ("Layer_" + Date.now());
     let geojson = parseImportedData(ext, fetched.text || "", fetched.contentType || "");
     if (ext === ".csv" && geojson.__rmaCsvImport) {
-      const countryGeojson = await buildCountryPolygonsFromCsv(geojson, geojson.__rmaCsvImport);
+      const csvMeta = geojson.__rmaCsvImport;
+      const countryGeojson = await buildCountryPolygonsFromCsv(geojson, csvMeta);
       if (!countryGeojson) {
         throw new Error("No CSV ISO codes matched the global country reference.");
       }
       geojson = countryGeojson;
+      const finalMeta = geojson.__rmaCsvImport || csvMeta;
+      const unmatchedCount = Number(finalMeta.unmatchedRowCount || 0);
+      const unmatchedValues = Array.isArray(finalMeta.unmatchedIsoValues) ? finalMeta.unmatchedIsoValues : [];
+      if (unmatchedCount > 0) {
+        showUnmatchedCodesModal(unmatchedValues, geojson.features.length);
+      } else {
+        showPopup("Mapped valid ISO3 rows successfully.", "success");
+      }
     }
 
     const safeName = await addImportedLayer(geojson, fallbackName, "Imported URL data");
     if (urlInput) urlInput.value = "";
     if (fileNameEl) fileNameEl.textContent = safeName;
-    showPopup(`Layer "${safeName}" added successfully`, "success");
+    if (!ext || ext !== ".csv") {
+      showPopup(`Layer "${safeName}" added successfully`, "success");
+    }
   } finally {
     hideLoading();
   }
@@ -4209,7 +4275,9 @@ function updateClassificationTableDefaultSymbol(label, color) {
       "background-color": "transparent"
     });
   } else {
-    setDynamicStyle(sym, { "background-color": /^#[0-9A-Fa-f]{6}$/.test(color) ? color : '#ccc' });
+    const fillOpacity = symbolKind === 'point' ? OVERLAY_POINT_FILL_OPACITY : OVERLAY_POLYGON_FILL_OPACITY;
+    const swatchColor = /^#[0-9A-Fa-f]{6}$/.test(color) ? hexToRgbaAlpha(color, fillOpacity) : '#ccc';
+    setDynamicStyle(sym, { "background-color": swatchColor });
   }
   tdSym.appendChild(sym);
 
@@ -4563,6 +4631,57 @@ function showPopup(msg, type = "error") {
 
   setTimeout(() => { setDynamicStyle(popup, { display: "none" }); }, 6000);
 }
+
+// --- Unmatched ISO3 codes modal (copyable list) ---
+function showUnmatchedCodesModal(codes, matchedCount) {
+  const overlay = document.getElementById("unmatched-codes-overlay");
+  const textarea = document.getElementById("unmatched-codes-textarea");
+  const desc = document.getElementById("unmatched-codes-desc");
+  if (!overlay || !textarea) return;
+  const list = Array.isArray(codes) ? codes.filter(Boolean) : [];
+  textarea.value = list.join("\n");
+  if (desc) {
+    desc.textContent = `Mapped ${Number(matchedCount) || 0} rows. ${list.length} code(s) could not be matched. Copy the list below to review or correct them.`;
+  }
+  overlay.classList.add("open");
+}
+
+function hideUnmatchedCodesModal() {
+  const overlay = document.getElementById("unmatched-codes-overlay");
+  if (overlay) overlay.classList.remove("open");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("unmatched-codes-overlay");
+  const closeBtn = document.getElementById("unmatched-codes-close");
+  const dismissBtn = document.getElementById("unmatched-codes-dismiss");
+  const copyBtn = document.getElementById("unmatched-codes-copy");
+  const textarea = document.getElementById("unmatched-codes-textarea");
+
+  [closeBtn, dismissBtn].forEach(btn => {
+    if (btn) btn.addEventListener("click", hideUnmatchedCodesModal);
+  });
+  if (overlay) {
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) hideUnmatchedCodesModal();
+    });
+  }
+  if (copyBtn && textarea) {
+    copyBtn.addEventListener("click", async () => {
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(textarea.value);
+        } else {
+          textarea.select();
+          document.execCommand("copy");
+        }
+        showPopup("Unmatched codes copied to clipboard", "success");
+      } catch (e) {
+        showPopup("Could not copy to clipboard. Select the text manually.", "error");
+      }
+    });
+  }
+});
 
 // --- Sidebar toggle helpers (buttons cached) ---
 const btnClassTable = document.getElementById('btnToggleClassTable');
@@ -5222,10 +5341,22 @@ window.addEventListener('load', resetInitialScrollPositions);
 
     const northW = Math.max(34, Math.min(56, Math.round(exportMapW * 0.05)));
     const northH = Math.max(44, Math.min(72, Math.round(northW * 1.35)));
-    const northPos = {
-      x: Math.max(12, exportMapW - northW - 24),
-      y: 24
-    };
+    const northArrowPosition = getElementExportNormalizedPosition(
+      northArrowEl,
+      mapEl,
+      (el, mapNode) => {
+        const pos = getTopRightPosition(el, mapNode, 12);
+        return { left: pos.left, top: pos.top + 30 };
+      }
+    );
+    const northPos = resolveExportPositionFromNorm(
+      northArrowPosition.normX,
+      northArrowPosition.normY,
+      northW,
+      northH,
+      exportMapW,
+      exportMapH
+    );
 
     const scaleFontSize = Math.max(9, Math.min(13, Math.round(exportMapW * 0.008)));
     const scalePaddingX = Math.max(6, Math.round(scaleFontSize * 0.7));
@@ -5234,10 +5365,22 @@ window.addEventListener('load', resetInitialScrollPositions);
     const scaleMeasuredW = measureExportTextWidth(scaleText || 'Scale: --', scaleFont);
     const scaleW = Math.max(90, Math.min(Math.round(exportMapW * 0.28), scaleMeasuredW + (scalePaddingX * 2)));
     const scaleH = Math.max(20, Math.round(scaleFontSize + (scalePaddingY * 2) + 2));
-    const scalePos = {
-      x: Math.max(0, Math.round((exportMapW - scaleW) / 2) + SCALE_BAR_OFFSET_X_PX),
-      y: Math.max(0, exportMapH - SCALE_BAR_OFFSET_Y_PX - scaleH)
-    };
+    const scalePosition = getElementExportNormalizedPosition(
+      scaleEl,
+      mapEl,
+      (el, mapNode) => {
+        const pos = getBottomCenterPosition(el, mapNode, SCALE_BAR_OFFSET_Y_PX, SCALE_BAR_OFFSET_X_PX);
+        return { left: pos.left, top: pos.top };
+      }
+    );
+    const scalePos = resolveExportPositionFromNorm(
+      scalePosition.normX,
+      scalePosition.normY,
+      scaleW,
+      scaleH,
+      exportMapW,
+      exportMapH
+    );
 
     let disclaimer = null;
     if (disclaimerText) {
@@ -5253,10 +5396,15 @@ window.addEventListener('load', resetInitialScrollPositions);
         lineHeight: Math.round(discFontSize * 1.25),
         maxLines: 5
       });
-      const discPos = {
-        x: Math.max(0, 12 + DISCLAIMER_LEFT_VISIBLE_INSET_PX),
-        y: Math.max(0, exportMapH - 30 - discLayout.height)
-      };
+      const disclaimerPosition = getDisclaimerExportNormalizedPosition(mapEl, disclaimerEl);
+      const discPos = resolveExportPositionFromNorm(
+        disclaimerPosition.normX,
+        disclaimerPosition.normY,
+        discLayout.width,
+        discLayout.height,
+        exportMapW,
+        exportMapH
+      );
       disclaimer = {
         text: disclaimerText,
         lines: discLayout.lines,
@@ -5847,7 +5995,7 @@ window.addEventListener('load', resetInitialScrollPositions);
       styleEl.type = 'text/css';
       styleEl.textContent = `
         .export-title{font-size:20px !important;font-weight:600;margin:0 0 8px 0;line-height:1;text-align:center !important;display:block !important;width:100% !important}
-        .export-map-wrapper .export-disclaimer-clone{font-size:10px !important;background:rgba(255,255,255,0.95) !important;padding:6px !important;word-break:break-word !important;display:inline-block !important;width:auto !important;text-align:left !important;max-height:calc(1.25em * 6) !important;overflow:hidden !important;white-space:normal !important;line-height:1.25 !important}
+        .export-map-wrapper .export-disclaimer-clone{font-size:10px !important;background:rgba(255,255,255,0.95) !important;padding:6px !important;word-break:break-word !important;display:inline-block !important;text-align:left !important;max-height:calc(1.25em * 6) !important;overflow:hidden !important;white-space:normal !important;line-height:1.25 !important}
         .export-map-wrapper .export-north-arrow-clone{display:flex !important;align-items:center !important;justify-content:center !important;flex-direction:column !important}
         .export-map-wrapper .export-north-arrow-clone .north-arrow-symbol{display:block !important;width:100% !important;text-align:center !important;padding-top:0 !important;line-height:1 !important}
         .export-img{width:100%;height:auto;display:block}
@@ -6196,7 +6344,8 @@ window.addEventListener('load', resetInitialScrollPositions);
         octx.fillText(titleText, Math.round(outW / 2), Math.round(titleH / 2));
 
         octx.drawImage(normalizedMapCanvas, 0, titleH);
-        drawFixedExportOverlaysToCanvas(octx, 0, titleH, normalizedMapCanvas.width, normalizedMapCanvas.height);
+        // Anchor overlays to the actual (possibly letterboxed) map content rect, not the full normalized slot.
+        drawFixedExportOverlaysToCanvas(octx, mapFit.x, titleH + mapFit.y, mapFit.width, mapFit.height);
 
         if (legendBlocks.length) {
           const legendWidth = legendBlocks.reduce((maxWidth, block) => {
@@ -6764,11 +6913,21 @@ function exportSVG() {
       if (safeDisclaimer) {
         const discRect = disclaimerEl ? disclaimerEl.getBoundingClientRect() : null;
         const mapRect = mapEl ? mapEl.getBoundingClientRect() : null;
-        const discX = alignedContentOffsetX + Math.round((Math.max(6, Math.round(8 * rawScaleX)) + rasterShiftX) * mapScaleX);
+        // Bound the disclaimer to the actual rendered map content, not the (possibly letterboxed) canvas slot.
+        const mapContentX = alignedContentOffsetX + mapFit.x;
+        const mapContentY = titleHeightPx + mapFit.y;
+        const mapContentW = mapFit.width;
+        const mapContentH = mapFit.height;
+        // Use the disclaimer's real on-screen offset (like the north arrow below), not a fixed constant.
+        const rawDiscX = discRect && mapRect
+          ? mapContentX + Math.round((((discRect.left - mapRect.left) * rawScaleX) - cropX - extraTrimX + rasterShiftX) * mapScaleX)
+          : mapContentX + Math.round((Math.max(6, Math.round(8 * rawScaleX)) + rasterShiftX) * mapScaleX);
+        // Clamp so a large negative raster shift or letterboxing can't push the box outside the visible map.
+        const discX = Math.max(mapContentX, Math.min(rawDiscX, mapContentX + mapContentW - 120 - marginPx));
         const desiredWidth = discRect ? Math.round(discRect.width * rawScaleX * 1.18) : Math.round(230 * uiScale);
         let discWidth = Math.max(
           Math.round(120 * uiScale),
-          Math.min(desiredWidth, Math.max(120, usedCanvasWidth - discX - marginPx))
+          Math.min(desiredWidth, Math.max(120, mapContentX + mapContentW - discX - marginPx))
         );
         const fontSizeDisc = Math.max(8, Math.round(10 * uiScale));
         const lineHeightDisc = Math.round(fontSizeDisc * 1.25);
@@ -6813,13 +6972,13 @@ function exportSVG() {
               const bottomCss = Math.max(0, mapRect.bottom - discRect.bottom);
               const bottomPx = Math.max(0, Math.round(bottomCss * rawScaleY));
               return Math.max(
-                titleHeightPx,
-                titleHeightPx + usedCanvasHeight - discHeight - bottomPx
+                mapContentY,
+                mapContentY + mapContentH - discHeight - bottomPx
               );
             })()
-          : (titleHeightPx + usedCanvasHeight - discHeight - marginPx);
-        const discYMin = titleHeightPx + 2;
-        const discYMax = Math.max(discYMin, (titleHeightPx + usedCanvasHeight - discHeight - 2));
+          : (mapContentY + mapContentH - discHeight - marginPx);
+        const discYMin = mapContentY + 2;
+        const discYMax = Math.max(discYMin, (mapContentY + mapContentH - discHeight - 2));
         discY = Math.max(discYMin, Math.min(discYMax, discY));
 
         const discBg = document.createElementNS(svgNS, "rect");
@@ -7155,5 +7314,3 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn("Some expected import UI elements are missing.");
   }
 });
-
-

@@ -292,6 +292,54 @@ footer {
 .popup-error { background: rgba(200,0,0,0.85); }
 .popup-success { background: rgba(0,128,0,0.85); }
 
+/* Unmatched ISO3 codes modal */
+.unmatched-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+}
+.unmatched-modal-overlay.open {
+  display: flex;
+}
+.unmatched-modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+.unmatched-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.unmatched-modal-desc {
+  font-size: 13px;
+  color: #444;
+  margin: 0;
+}
+.unmatched-modal-textarea {
+  flex: 1;
+  min-height: 160px;
+  resize: vertical;
+  font-family: monospace;
+  font-size: 13px;
+}
+.unmatched-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 /* Legend styling used when building legend DOM in JS */
 .legend-header {
   font-weight: bold;

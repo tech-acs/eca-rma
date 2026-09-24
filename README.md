@@ -16,9 +16,9 @@ No build step is required.
 2. Serve the folder with any static server.
 
 ## Data Limits
-- Local upload size: `100 MB` per file
+- Local upload size: `500 MB` per file
 - Remote URL import size: `50 MB`
-- Maximum uncompressed ZIP size: `200 MB`
+- Maximum uncompressed ZIP size: `500 MB`
 - Remote import timeout: `300 seconds`
 - Maximum features per dataset: `1,000,000`
 - Maximum vertices per dataset: `10,000,000`
