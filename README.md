@@ -49,7 +49,12 @@ Export reliability depends on data size and CORS:
 - Map display uses Leaflet default web map projection (Web Mercator, EPSG:3857) for tiled basemaps.
 - Imported GeoJSON and CSV coordinates should be in WGS84 geographic coordinates (EPSG:4326), using decimal degrees.
 - CSVs with latitude/longitude fields (for example, `lat` and `lon`, or `latitude` and `longitude`) are imported as point features. CSVs without coordinates must provide a three-letter ISO3 code field; matching rows are converted to global country polygons and all other CSV columns are available for thematic styling.
+- Coordinate headers are matched by normalized exact names: `lat` or `latitude`, and `lon`, `lng`, `long`, or `longitude`. Use only one latitude and one longitude column; ambiguous coordinate headers are rejected.
+- Invalid, empty, or unmatched ISO3 values are skipped and displayed in a copyable list. If none match, no layer is added and the list is still shown.
+- A code present in the UN reference table can still be unmatched if the UN boundary service does not provide a matching country polygon.
 - If source data is in another CRS/projection, reproject it to EPSG:4326 before import.
+- Country and continent filters use spatial matching when available, with recognized country or continent attributes as a fallback for unmatched features. When an active filter requires a location that cannot be determined, those features are excluded and a warning reports their count. If spatial matching is unavailable, the interface warns that source attributes are being used.
+- Imports with the same layer name are kept separately using numbered names.
 
 ## Security Notes
 - URL imports are `HTTPS` only

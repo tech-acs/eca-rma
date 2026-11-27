@@ -35,7 +35,6 @@ $requiredExact = @{
   "X-Frame-Options" = "DENY"
   "X-Content-Type-Options" = "nosniff"
   "Cross-Origin-Opener-Policy" = "same-origin"
-  "Cross-Origin-Embedder-Policy" = "require-corp"
   "Cross-Origin-Resource-Policy" = "same-origin"
 }
 

@@ -58,7 +58,7 @@
       href="vendor/leaflet.draw.css"
       >
       <!-- my local styles -->
-      <link rel="stylesheet" href="baseStyle.css?v=20260308-110">
+      <link rel="stylesheet" href="baseStyle.css?v=20261127-001">
       <link rel="stylesheet" href="beautifiedStyle.css?v=20260308-110">
       <link rel="stylesheet" href="dynamic.css?v=20260308-110">
 
@@ -99,11 +99,24 @@
         defer></script>
 
   <!-- my app -->
-  <script src="app.js?v=20260907-north-arrow" defer></script>
+  <script src="app.js?v=20261126-120" defer></script>
   <!-- Secure upload handler -->
     <!-- Inline script removed for CSP; handlers wired in app.js -->
   </head>
 <body>
+  <noscript>
+    <div class="javascript-required" role="alert">
+      <div>
+        <h2>JavaScript is required</h2>
+        <p>Enable JavaScript in your browser settings, then reload this page.</p>
+        <ul>
+          <li><strong>Microsoft Edge:</strong> Open Settings &gt; Cookies and site permissions &gt; JavaScript, then enable “Allowed”.</li>
+          <li><strong>Google Chrome:</strong> Open Settings &gt; Privacy and security &gt; Site settings &gt; JavaScript, then select “Sites can use JavaScript”.</li>
+          <li><strong>Mozilla Firefox:</strong> Type <code>about:config</code> in the address bar, search for <code>javascript.enabled</code>, set it to <code>true</code>, and reload this page.</li>
+        </ul>
+      </div>
+    </div>
+  </noscript>
   <!-- Header -->
   <header class="fixed-top w-100">
     <div class="d-flex align-items-center custom-blue text-white p-3">
@@ -202,6 +215,7 @@
           <div id="country-filter-list" class="dropdown-menu w-100 p-2 country-filter-list"></div>
         </div>
       </div>
+      <small id="filter-warning" class="form-text text-muted" role="status" aria-live="polite"></small>
 
       <!-- Attribute selector -->
       <div class="mb-3" id="attribute-select-col">
@@ -277,7 +291,7 @@
   <div id="map-container">
     <div id="map">
       <div id="disclaimer" class="clamp-5-lines">
-        Disclaimer: The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations. Final boundary between the Republic of Sudan and the Republic of South Sudan has not yet been determined.
+        Disclaimer: The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations. Final boundary between the Sudan and South Sudan has not yet been determined.
       </div>
     </div>
   </div>
@@ -301,14 +315,16 @@
   </footer>
 
   <!-- Unmatched ISO3 codes modal -->
-  <div id="unmatched-codes-overlay" class="unmatched-modal-overlay">
-    <div id="unmatched-codes-modal" class="unmatched-modal" role="dialog" aria-modal="true" aria-labelledby="unmatched-codes-title">
+  <div id="unmatched-codes-overlay" class="unmatched-modal-overlay" hidden>
+    <div id="unmatched-codes-modal" class="unmatched-modal" role="dialog" aria-modal="true"
+      aria-labelledby="unmatched-codes-title" aria-describedby="unmatched-codes-desc">
       <div class="unmatched-modal-header">
         <h5 id="unmatched-codes-title" class="mb-0">Unmatched ISO3 codes</h5>
         <button type="button" id="unmatched-codes-close" class="btn-close" aria-label="Close"></button>
       </div>
       <p id="unmatched-codes-desc" class="unmatched-modal-desc"></p>
       <textarea id="unmatched-codes-textarea" class="unmatched-modal-textarea form-control" readonly></textarea>
+      <p id="unmatched-codes-status" role="status" aria-live="polite"></p>
       <div class="unmatched-modal-actions">
         <button type="button" id="unmatched-codes-copy" class="btn btn-sm btn-primary">Copy to clipboard</button>
         <button type="button" id="unmatched-codes-dismiss" class="btn btn-sm btn-outline-secondary">Close</button>

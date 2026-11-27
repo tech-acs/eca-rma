@@ -3,7 +3,7 @@
 This file tracks implementation status for the UNECA Rapid Mapping security controls.
 It is intended to be audit-friendly and deployment-safe.
 
-Last updated: 2026-03-11
+Last updated: 2026-11-10
 
 ## Application Controls
 
@@ -13,12 +13,12 @@ Last updated: 2026-03-11
 | 2 | Block URL credentials and non-443 port | Complete | URL validation rejects credentials and non-default HTTPS ports. |
 | 3 | Block private/local/intranet hosts | Complete | Host validation blocks localhost/private ranges and local-only hostnames. |
 | 4 | Remote import timeout and max size cap | Complete | Timeout and byte cap enforced in remote import pipeline. |
-| 5 | Local file max size cap | Complete | 1 GB local file cap enforced before processing. |
+| 5 | Local file max size cap | Complete | 100 MB local file cap enforced before processing; ZIP archives also have a 200 MB uncompressed-size cap. |
 | 6 | Local file extension allowlist (.geojson, .csv, .zip) | Complete | Extension checks run before import. |
 | 7 | Dataset complexity limits (max features/vertices) | Complete | Limits enforced before rendering/export processing. |
 | 8 | Safe popup rendering (no HTML sink) | Complete | Popups and dynamic UI text use text-safe paths. |
 | 9 | contenteditable handling as plain text | Complete | Paste converted to plain text and sanitized on blur. |
-| 10 | Redirect re-validation for URL import | Complete | Redirect target is re-validated after fetch redirection. |
+| 10 | Redirect-safe URL import | Complete | Automatic redirects are rejected and the resolved URL is validated before response processing. |
 | 11 | Remove inline JS handlers | Complete | Event listeners are wired in app code (CSP-friendly). |
 | 12 | ZIP bomb/decompression bomb guard | Complete | ZIP entries, uncompressed total, and expansion ratio are checked. |
 | 13 | Vendor supply-chain integrity controls | Complete | Vendor checksums tracked in `vendor-hashes.json` and verified by script. |
@@ -52,5 +52,5 @@ Last updated: 2026-03-11
 
 - CSV imports enforce row and column limits, reject prototype-pollution property names, cap cell lengths, and copy only validated fields into point or matched country-polygon features.
 - Header controls in this checklist are defined in `web.config` and are expected to be validated against the deployed endpoint.
-- The current `verify-security-headers.ps1` script validates IDs 15-23 and cache policy expectations.
+- The current `verify-security-headers.ps1` script validates IDs 15-21 and 23-24 plus cache policy expectations; COEP is intentionally excluded because the basemap is not cross-origin isolated.
 - HSTS should be verified as part of deployment validation on the final HTTPS host.

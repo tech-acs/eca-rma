@@ -96,7 +96,7 @@ const UN_COUNTRY_BOUNDARY_QUERY_URL = "https://geoservices.un.org/arcgis/rest/se
 const WORLD_COUNTRIES_REMOTE_URL = "https://cdn.jsdelivr.net/npm/world-countries@5.1.0/dist/countries.json";
 const MIN_REFERENCE_COUNTRY_COUNT = 150;
 // Minimal global state (kept intentionally small)
-let overlayData = {};
+let overlayData = Object.create(null);
 let currentLayerName = null;
 let geojsonData = null;
 let geojsonLayer = null;
@@ -113,6 +113,7 @@ let selectedCountryValues = new Set();
 let worldBoundaryIndex = null;
 let worldBoundaryIndexPromise = null;
 let worldCountriesByContinent = null;
+let filterInferenceUnavailable = false;
 
 // Best-effort clickjacking mitigation for static hosting where CSP headers
 // may not be fully controllable at the web server layer.
@@ -128,6 +129,7 @@ if (IS_FRAMED_CONTEXT) {
 }
 // --- Helpers ---
 let dynamicSheet = null;
+let dynamicSheetAccessFailed = false;
 let dynamicStyleSeq = 0;
 
 function initDynamicSheet() {
@@ -157,36 +159,41 @@ function ensureDynamicRuleId(el) {
 
 function upsertDynamicRule(el, declarations) {
   const sheet = initDynamicSheet();
-  if (!sheet || !declarations) return;
+  if (!declarations) return;
+  const applyElementStyles = () => {
+    Object.keys(declarations).forEach(key => {
+      const value = declarations[key];
+      if (value == null || value === "") el.style.removeProperty(key);
+      else el.style.setProperty(key, String(value));
+    });
+  };
+  if (!sheet || dynamicSheetAccessFailed) {
+    applyElementStyles();
+    return;
+  }
   const id = ensureDynamicRuleId(el);
   const selector = `[data-dyn-id="${id}"]`;
-  const cssText = `${selector}{${declarations}}`;
   try {
-    if (sheet.cssRules && sheet.cssRules.length) {
-      for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
-        const rule = sheet.cssRules[i];
-        if (rule && rule.selectorText === selector) {
-          sheet.deleteRule(i);
-          break;
-        }
-      }
+    let rule = Array.from(sheet.cssRules || []).find(item => item.selectorText === selector);
+    if (!rule) {
+      const idx = sheet.insertRule(`${selector}{}`, sheet.cssRules.length);
+      rule = sheet.cssRules[idx];
     }
-    const idx = sheet.cssRules ? sheet.cssRules.length : 0;
-    sheet.insertRule(cssText, idx);
+    Object.keys(declarations).forEach(key => {
+      const value = declarations[key];
+      if (value == null || value === "") rule.style.removeProperty(key);
+      else rule.style.setProperty(key, String(value));
+    });
   } catch (e) {
-    console.warn("Failed to update dynamic CSS rule:", e);
+    console.warn("Failed to update dynamic CSS rule; applying element styles instead:", e);
+    if (e?.name === "SecurityError") dynamicSheetAccessFailed = true;
+    applyElementStyles();
   }
 }
 
 function setDynamicStyle(el, styleObj) {
   if (!el || !styleObj) return;
-  const parts = [];
-  Object.keys(styleObj).forEach(k => {
-    const v = styleObj[k];
-    if (v == null || v === "") return;
-    parts.push(`${k}:${v}`);
-  });
-  if (parts.length) upsertDynamicRule(el, parts.join(";"));
+  upsertDynamicRule(el, styleObj);
 }
 
 function sanitizeId(str) {
@@ -226,9 +233,35 @@ function secureEditablePlainText(targetEl, fallback, onCommit) {
   targetEl.dataset.maxTextLength = String(MAX_EDITABLE_TEXT_LENGTH);
 
   const normalize = () => {
-    const next = sanitizePlainText(targetEl.textContent, fallback).slice(0, MAX_EDITABLE_TEXT_LENGTH);
+    const editing = document.activeElement === targetEl;
+    const normalizeEditingText = (text) =>
+      text.replace(/[\r\n\t]+/g, " ").slice(0, MAX_EDITABLE_TEXT_LENGTH);
+    const next = editing
+      ? normalizeEditingText(targetEl.textContent || "")
+      : sanitizePlainText(targetEl.textContent, fallback).slice(0, MAX_EDITABLE_TEXT_LENGTH);
     if (targetEl.textContent !== next || targetEl.querySelector('*')) {
+      const selection = editing ? window.getSelection() : null;
+      let anchorOffset;
+      let focusOffset;
+      if (selection && selection.rangeCount &&
+          targetEl.contains(selection.anchorNode) && targetEl.contains(selection.focusNode)) {
+        const getOffset = (node, offset) => {
+          const range = document.createRange();
+          range.selectNodeContents(targetEl);
+          range.setEnd(node, offset);
+          return normalizeEditingText(range.toString()).length;
+        };
+        anchorOffset = getOffset(selection.anchorNode, selection.anchorOffset);
+        focusOffset = getOffset(selection.focusNode, selection.focusOffset);
+      }
       targetEl.textContent = next;
+      if (anchorOffset !== undefined && focusOffset !== undefined) {
+        const node = targetEl.firstChild || targetEl;
+        selection.setBaseAndExtent(
+          node, Math.min(anchorOffset, next.length),
+          node, Math.min(focusOffset, next.length)
+        );
+      }
     }
     return next;
   };
@@ -282,6 +315,17 @@ function sanitizeName(name) {
       .replace(/_/g, " ")
   );
   return safe || ("Layer " + Date.now());
+}
+
+function uniqueLayerName(name) {
+  const existingNames = Object.keys(overlayData);
+  const existingIds = new Set(existingNames.map(sanitizeId));
+  let candidate = name;
+  let suffix = 2;
+  while (Object.prototype.hasOwnProperty.call(overlayData, candidate) || existingIds.has(sanitizeId(candidate))) {
+    candidate = `${name} (${suffix++})`;
+  }
+  return candidate;
 }
 
 function countVerticesInCoordinates(coords) {
@@ -456,7 +500,7 @@ function isBlockedPrivateImportHost(hostname) {
   return false;
 }
 
-async function fetchWithLimits(url) {
+async function fetchWithLimits(url, validateRemoteUrl = false) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REMOTE_IMPORT_TIMEOUT_MS);
   const maxRemoteMb = Math.round(MAX_REMOTE_IMPORT_BYTES / (1024 * 1024));
@@ -466,10 +510,15 @@ async function fetchWithLimits(url) {
       headers: { "Accept": "*/*" },
       mode: "cors",
       credentials: "omit",
+      redirect: "error",
       signal: controller.signal
     });
 
     if (!response.ok) throw new Error("Network error: " + response.status);
+    const finalUrl = response.url || url;
+    if (validateRemoteUrl) {
+      assertFinalImportUrlAllowed(finalUrl);
+    }
 
     const contentLenHeader = response.headers.get("Content-Length");
     const contentLen = contentLenHeader ? Number(contentLenHeader) : 0;
@@ -482,7 +531,11 @@ async function fetchWithLimits(url) {
       if (textFallback.length > MAX_REMOTE_IMPORT_BYTES) {
         throw new Error(`Remote file too large (max ${maxRemoteMb} MB).`);
       }
-      return { text: textFallback, contentType: response.headers.get("Content-Type") || "" };
+      return {
+        text: textFallback,
+        contentType: response.headers.get("Content-Type") || "",
+        finalUrl
+      };
     }
 
     const reader = response.body.getReader();
@@ -507,7 +560,7 @@ async function fetchWithLimits(url) {
     return {
       text,
       contentType: response.headers.get("Content-Type") || "",
-      finalUrl: response.url || url
+      finalUrl
     };
   } catch (err) {
     if (err && err.name === "AbortError") {
@@ -959,11 +1012,10 @@ function isLikelyCsvPayload(text) {
   if (lines.length < 2) return false;
   const header = String(lines[0] || "").toLowerCase();
   const hasDelimiter = /,|;|\t/.test(header);
-  const hasLatField = /(latitude|lat)\b/.test(header);
-  const hasLonField = /(longitude|lon|lng|long)\b/.test(header);
   const headerCells = header.split(/[,;\t]/).map(value => value.trim());
+  const { latKeys, lonKeys } = getCsvCoordinateKeys(headerCells);
   const hasIso3Field = !!getCsvIsoKey(headerCells);
-  return hasDelimiter && ((hasLatField && hasLonField) || hasIso3Field);
+  return hasDelimiter && ((latKeys.length && lonKeys.length) || hasIso3Field);
 }
 
 function assertCsvPayloadLooksSafe(csvText, sourceLabel = "CSV") {
@@ -1004,10 +1056,12 @@ function assertCsvPayloadLooksSafe(csvText, sourceLabel = "CSV") {
     throw new Error(`${sourceLabel} has too many columns (${headerCells.length}; max ${MAX_CSV_COLUMNS}).`);
   }
 
-  const hasLatField = headerCells.some(v => /(latitude|lat)\b/i.test(v));
-  const hasLonField = headerCells.some(v => /(longitude|lon|lng|long)\b/i.test(v));
+  const { latKeys, lonKeys } = getCsvCoordinateKeys(headerCells);
   const hasIso3Field = !!getCsvIsoKey(headerCells);
-  if (!((hasLatField && hasLonField) || hasIso3Field)) {
+  if (latKeys.length > 1 || lonKeys.length > 1) {
+    throw new Error(`${sourceLabel} has ambiguous latitude or longitude columns. Keep one of each.`);
+  }
+  if (!((latKeys.length && lonKeys.length) || hasIso3Field)) {
     throw new Error(`${sourceLabel} must have latitude/longitude columns or an ISO3 code column.`);
   }
 }
@@ -1531,6 +1585,7 @@ async function loadWorldBoundaryIndex() {
         iso2: sanitizePlainText(metadata.iso2 || f?.properties?.ISO2CD || ""),
         iso3: sanitizePlainText(metadata.iso3 || boundaryIso3),
         m49: sanitizePlainText(metadata.m49 || ""),
+        aliases: [country, metadata.country, metadata.officialName, ...(metadata.aliases || [])].filter(Boolean),
         bbox: bboxFromCoordinates(f?.geometry?.coordinates),
         geometry: f?.geometry || null
       };
@@ -1564,6 +1619,25 @@ async function ensureSpatialCountryContinentFields(data) {
   const boundaryIndex = await loadWorldBoundaryIndex();
   if (!Array.isArray(boundaryIndex) || !boundaryIndex.length) return false;
 
+  const countryLookup = new Map();
+  boundaryIndex.forEach(entry => {
+    [entry.country, entry.iso2, entry.iso3, ...(entry.aliases || [])].forEach(value => {
+      const key = normalizeCountryName(value);
+      if (!key) return;
+      if (countryLookup.has(key) && countryLookup.get(key)?.country !== entry.country) {
+        countryLookup.set(key, null);
+      } else if (!countryLookup.has(key)) {
+        countryLookup.set(key, entry);
+      }
+    });
+  });
+  const countryKeys = new Set([
+    "country", "countryname", "countrynameen", "cntryname", "admin", "adm0name", "admin0name",
+    "countryiso3code", "iso3", "isoa3", "isoalpha3", "iso3cd", "iso2", "isoa2", "isoalpha2"
+  ]);
+  const continentKeys = new Set(["continent", "continentname", "cont", "contcd", "continentcode", "contname"]);
+  const continentTokens = new Set(["af", "afr", "africa", "as", "asi", "asia", "eu", "eur", "europe", "na", "namerica", "northamerica", "sa", "samerica", "southamerica", "oc", "oce", "oceania", "an", "antarctica"]);
+
   let tagged = 0;
   feats.forEach(f => {
     if (!f.properties) f.properties = {};
@@ -1582,11 +1656,26 @@ async function ensureSpatialCountryContinentFields(data) {
       hit = candidates.find(c => pointInGeometry([x, y], c.geometry));
       if (hit) break;
     }
-    if (!hit) return;
-
-    f.properties.__rma_country = hit.country;
-    if (hit.continent) f.properties.__rma_continent_spatial = hit.continent;
-    tagged++;
+    if (!hit) {
+      const sourceCountry = Object.keys(f.properties)
+        .filter(key => countryKeys.has(normKey(key)))
+        .map(key => countryLookup.get(normalizeCountryName(f.properties[key])))
+        .find(Boolean);
+      if (sourceCountry) hit = sourceCountry;
+    }
+    if (hit) {
+      f.properties.__rma_country = hit.country;
+      if (hit.continent) f.properties.__rma_continent_spatial = hit.continent;
+    } else {
+      const sourceContinentKey = Object.keys(f.properties).find(key =>
+        continentKeys.has(normKey(key)) && continentTokens.has(normKey(f.properties[key]))
+      );
+      if (sourceContinentKey) {
+        const sourceContinent = f.properties[sourceContinentKey];
+        f.properties.__rma_continent_spatial = continentLabel(sourceContinent);
+      }
+    }
+    if (f.properties.__rma_country || f.properties.__rma_continent_spatial) tagged++;
   });
 
   return tagged > 0;
@@ -1710,6 +1799,20 @@ function getFilteredFeatures(data) {
 }
 
 function getFilteredGeojson(data) {
+  const warning = document.getElementById("filter-warning");
+  if (warning) {
+    const filteringContinent = !!activeContinentField && selectedContinentValues.size > 0;
+    const filteringCountry = !!activeCountryField && selectedCountryValues.size > 0;
+    const features = Array.isArray(data?.features) ? data.features : [];
+    const unassigned = features.filter(feature =>
+      (filteringContinent && !sanitizePlainText(feature?.properties?.[activeContinentField])) ||
+      (filteringCountry && !sanitizePlainText(feature?.properties?.[activeCountryField]))
+    ).length;
+    const messages = [];
+    if (filterInferenceUnavailable) messages.push("Spatial country matching is unavailable; source attributes are used where available.");
+    if (unassigned) messages.push(`${unassigned} feature(s) without a required location are excluded by the current filter.`);
+    warning.textContent = messages.join(" ");
+  }
   return { ...(data || {}), features: getFilteredFeatures(data) };
 }
 // Add a Secure Popup Binding
@@ -1792,6 +1895,7 @@ const SIDEBAR_WIDTH_PX = 250;
 const MAP_OVERLAP_PX = 80;
 const MAP_SIDE_VISIBLE_INSET_PX = MAP_OVERLAP_PX;
 const DISCLAIMER_LEFT_VISIBLE_INSET_PX = 50;
+const NORTH_ARROW_MARGIN_PX = 50;
 const HOME_VERTICAL_PADDING_PX = 10;
 const EDGE_HOME_VERTICAL_PADDING_EXTRA_PX = 8;
 const IMPORT_EXTENT_MAX_ZOOM = 5;
@@ -2192,26 +2296,16 @@ function getBottomCenterPosition(el, mapEl, bottomPx = 14, offsetXPx = 0) {
   return { left, top };
 }
 
-function getTopRightPosition(el, mapEl, marginPx = 12) {
-  const mapW = mapEl.clientWidth || 0;
-  const left = Math.max(
-    MAP_SIDE_VISIBLE_INSET_PX,
-    Math.round(mapW - MAP_SIDE_VISIBLE_INSET_PX - el.offsetWidth - marginPx)
-  );
-  const top = Math.max(0, marginPx);
-  return { left, top };
-}
-
 function formatScaleDistance(meters) {
   if (!isFinite(meters) || meters <= 0) return "--";
   if (meters >= 1000) {
     const km = meters / 1000;
-    if (km >= 1000) return `${Math.round(km)} kilometer`;
-    if (km >= 100) return `${km.toFixed(1)} kilometer`;
-    if (km >= 10) return `${km.toFixed(2)} kilometer`;
-    return `${km.toFixed(3)} kilometer`;
+    if (km >= 1000) return `${Math.round(km)} kilometres`;
+    if (km >= 100) return `${km.toFixed(1)} kilometres`;
+    if (km >= 10) return `${km.toFixed(2)} kilometres`;
+    return `${km.toFixed(3)} kilometres`;
   }
-  return `${Math.round(meters)} meter`;
+  return `${Math.round(meters)} metres`;
 }
 
 const ExactScaleControl = L.Control.extend({
@@ -2222,7 +2316,7 @@ const ExactScaleControl = L.Control.extend({
     const label = L.DomUtil.create("div", "exact-scale-label", container);
     const prefix = L.DomUtil.create("span", "exact-scale-prefix", label);
     const value = L.DomUtil.create("span", "exact-scale-value", label);
-    prefix.textContent = "Scale: ";
+    prefix.textContent = "Scale 1: ";
     value.textContent = "--";
     this._value = value;
     L.DomEvent.disableClickPropagation(container);
@@ -2331,8 +2425,14 @@ makeControlDraggable(scaleControl, (el, mapEl) => {
 });
 placeScaleBarOnMapBottom(scaleControl);
 makeControlDraggable(northArrowControl, (el, mapEl) => {
-  const pos = getTopRightPosition(el, mapEl, 12);
-  return { left: pos.left, top: pos.top + 30 };
+  const mapRect = mapEl.getBoundingClientRect();
+  const sidebar = document.getElementById("right-sidebar");
+  const sidebarRect = sidebar?.getBoundingClientRect();
+  const visibleRight = sidebarRect && sidebarRect.left < mapRect.right && sidebarRect.right > mapRect.left
+    ? Math.max(mapRect.left, sidebarRect.left)
+    : mapRect.right;
+  const left = Math.max(0, visibleRight - mapRect.left - NORTH_ARROW_MARGIN_PX - el.offsetWidth);
+  return { left, top: NORTH_ARROW_MARGIN_PX };
 });
 
 // Base layer
@@ -2531,10 +2631,16 @@ function resetAllMapUiPositions() {
   resetDraggableControlsToInitial();
 }
 
+let disclaimerDragInitInProgress = false;
+
 function initDisclaimerDrag() {
   const disc = document.getElementById('disclaimer');
   const mapEl = map && typeof map.getContainer === 'function' ? map.getContainer() : null;
   if (!disc || !mapEl || disc.dataset.dragInit === '1') return;
+  
+  // Prevent race condition: only allow one concurrent initialization
+  if (disclaimerDragInitInProgress) return;
+  disclaimerDragInitInProgress = true;
 
   const resolveDisclaimerWidthPx = () => {
     const mapRect = mapEl.getBoundingClientRect();
@@ -2550,6 +2656,7 @@ function initDisclaimerDrag() {
   };
 
   disc.dataset.dragInit = '1';
+  disclaimerDragInitInProgress = false;
   disc.setAttribute('contenteditable', 'false');
   disc.setAttribute('draggable', 'false');
   disc.style.pointerEvents = 'auto';
@@ -2854,6 +2961,27 @@ function getLegendSymbolKindFromGeometryType(geometryType) {
   return "polygon";
 }
 
+function getDefaultLegendTitle(layerName) {
+  return sanitizePlainText(
+    `${humanizeLabel(layerName)}: ${humanizeLabel(currentAttribute || "")}`,
+    humanizeLabel(layerName)
+  );
+}
+
+function refreshLegendTitle(layerName) {
+  const title = getDefaultLegendTitle(layerName);
+  const state = overlayData[layerName];
+  if (state) {
+    state.legendTitle = title;
+    state.legendTitleDefault = title;
+  }
+
+  const safeId = 'legend-' + String(layerName).replace(/[^\w\-]/g, "_");
+  const block = document.getElementById(safeId);
+  const header = block ? block.querySelector(".legend-header") : null;
+  if (header) header.textContent = title;
+}
+
 function updateLegend(layerName, vals, cols, isNumeric, geojson) {
   const leg = document.getElementById('legend-items');
   if (!leg) return;
@@ -2869,12 +2997,16 @@ function updateLegend(layerName, vals, cols, isNumeric, geojson) {
 
   block.textContent = "";
 
-  const defaultLegendTitle = sanitizePlainText(
-    `${humanizeLabel(layerName)}: ${humanizeLabel(currentAttribute || "")}`,
-    humanizeLabel(layerName)
-  );
+  const defaultLegendTitle = getDefaultLegendTitle(layerName);
   if (overlayData[layerName]) {
-    overlayData[layerName].legendTitle = sanitizePlainText(overlayData[layerName].legendTitle, defaultLegendTitle);
+    const savedTitle = sanitizePlainText(overlayData[layerName].legendTitle, "");
+    const savedDefaultTitle = sanitizePlainText(overlayData[layerName].legendTitleDefault, "");
+    if (!savedTitle || savedTitle === savedDefaultTitle) {
+      overlayData[layerName].legendTitle = defaultLegendTitle;
+    } else {
+      overlayData[layerName].legendTitle = savedTitle;
+    }
+    overlayData[layerName].legendTitleDefault = defaultLegendTitle;
   }
 
   const header = document.createElement('div');
@@ -2885,7 +3017,10 @@ function updateLegend(layerName, vals, cols, isNumeric, geojson) {
   header.spellcheck = false;
   header.textContent = overlayData[layerName]?.legendTitle || defaultLegendTitle;
   secureEditablePlainText(header, defaultLegendTitle, (next) => {
-    if (overlayData[layerName]) overlayData[layerName].legendTitle = next;
+    if (overlayData[layerName]) {
+      overlayData[layerName].legendTitle = next;
+      overlayData[layerName].legendTitleDefault = "";
+    }
   });
   block.appendChild(header);
 
@@ -2912,18 +3047,24 @@ function updateLegend(layerName, vals, cols, isNumeric, geojson) {
     else if (symbolKind === 'point') sym.classList.add('legend-sym-point');
     else sym.classList.add('legend-sym-polygon');
 
+    const symbolStyle = {
+      opacity: symbolKind === "polygon" ? OVERLAY_POLYGON_FILL_OPACITY : 1
+    };
     if (/^#[0-9A-Fa-f]{3,6}$/.test(color) || /^[a-zA-Z]+$/.test(color)) {
       if (symbolKind === 'line') {
-        setDynamicStyle(sym, { "color": color, "background-color": "transparent" });
+        symbolStyle.color = color;
+        symbolStyle["background-color"] = "transparent";
       } else {
         const fillOpacity = symbolKind === 'point' ? OVERLAY_POINT_FILL_OPACITY : OVERLAY_POLYGON_FILL_OPACITY;
         const swatchColor = /^#[0-9A-Fa-f]{6}$/.test(color) ? hexToRgbaAlpha(color, fillOpacity) : color;
-        setDynamicStyle(sym, { "background-color": swatchColor, "color": "inherit" });
+        symbolStyle["background-color"] = swatchColor;
+        symbolStyle.color = "inherit";
       }
     } else {
-      setDynamicStyle(sym, { "background-color": "#ccc" });
+      symbolStyle["background-color"] = "#ccc";
       console.warn("Invalid color blocked:", color);
     }
+    setDynamicStyle(sym, symbolStyle);
 
     const lbl = document.createElement('span');
     lbl.textContent = label;
@@ -2950,6 +3091,46 @@ function updateLegend(layerName, vals, cols, isNumeric, geojson) {
 }
 //Overlay Add/Remove Wiring
 // --- Overlay add/remove legend wiring ---
+function getVisibleOverlayLayerName(excludedName = "") {
+  const candidates = [
+    ...layerOrder,
+    ...Object.keys(overlayData)
+  ];
+  return candidates.find((name, index) =>
+    name &&
+    name !== excludedName &&
+    candidates.indexOf(name) === index &&
+    overlayData[name]?.layerGroup &&
+    map.hasLayer(overlayData[name].layerGroup)
+  ) || null;
+}
+
+function clearActiveLayerUi() {
+  currentLayerName = null;
+  geojsonData = null;
+  layerGroup = null;
+  currentAttribute = null;
+  numericUserColors = null;
+  categoricalUserColors = null;
+
+  const layerSel = document.getElementById('layer-select');
+  if (layerSel) layerSel.value = "";
+  const attrSel = document.getElementById('attribute-select');
+  if (attrSel) attrSel.textContent = "";
+  hideRow('attribute-select-col');
+  hideRow('classification-type-col');
+  hideRow('num-classes-col');
+
+  const table = document.getElementById('table-container');
+  if (table) setDynamicStyle(table, { display: "none" });
+  const thead = document.querySelector('#table-container thead');
+  const tbody = document.getElementById('classification-table');
+  if (thead) thead.textContent = "";
+  if (tbody) tbody.textContent = "";
+  const warning = document.getElementById("filter-warning");
+  if (warning) warning.textContent = "";
+}
+
 map.on('overlayadd', (e) => {
   const name = Object.keys(overlayData).find(
     key => overlayData[key].layerGroup === e.layer
@@ -2962,6 +3143,11 @@ map.on('overlayadd', (e) => {
   updateLegend(name, data.vals, data.cols, data.isNumeric, data.geojson);
   applyLayerStackOrder();
   reorderLegendBlocks();
+  if (!currentLayerName ||
+      !overlayData[currentLayerName]?.layerGroup ||
+      !map.hasLayer(overlayData[currentLayerName].layerGroup)) {
+    setActiveLayer(name);
+  }
 });
 
 map.on('overlayremove', (e) => {
@@ -2973,6 +3159,11 @@ map.on('overlayremove', (e) => {
   const block = document.getElementById('legend-' + sanitizeId(name));
   if (block) block.remove();
   reorderLegendBlocks();
+  if (currentLayerName === name) {
+    const nextName = getVisibleOverlayLayerName(name);
+    if (nextName) setActiveLayer(nextName);
+    else clearActiveLayerUi();
+  }
 });
 //Styling, Defaults, and Live Refresh Helpers
 // --- Default styles (use getLineWidth/getPointRadius) ---
@@ -3110,6 +3301,15 @@ function getCsvIsoKey(keys) {
   }) || null;
 }
 
+function getCsvCoordinateKeys(keys) {
+  const latNames = new Set(["lat", "latitude"]);
+  const lonNames = new Set(["lon", "lng", "long", "longitude"]);
+  return {
+    latKeys: (keys || []).filter(key => latNames.has(normKey(key))),
+    lonKeys: (keys || []).filter(key => lonNames.has(normKey(key)))
+  };
+}
+
 function getIsoCodeFamily(key) {
   const normalized = normKey(key);
   if (/m49/.test(normalized)) return "m49";
@@ -3168,11 +3368,14 @@ function chooseCsvThematicKey(rows, keys, isoKey) {
 
 async function buildCountryPolygonsFromCsv(csvGeojson, csvInfo) {
   if (!csvGeojson || !csvInfo) return null;
-  const referenceRows = await loadCountryReferenceRows();
   const requestedIso3 = Array.from(new Set(csvGeojson.features
     .map(feature => normalizeIsoJoinValue(feature?.properties?.[csvInfo.isoKey]))
     .filter(value => /^[A-Z]{3}$/.test(value))));
-  if (!requestedIso3.length) return null;
+  const unmatchedValues = new Set(csvInfo.unmatchedIsoValues || []);
+  if (!requestedIso3.length) {
+    return { type: "FeatureCollection", features: [], __rmaCsvImport: { unmatchedIsoValues: Array.from(unmatchedValues) } };
+  }
+  const referenceRows = await loadCountryReferenceRows();
   const where = `ISO3CD IN (${requestedIso3.map(value => `'${value}'`).join(",")})`;
   const query = new URL(UN_COUNTRY_BOUNDARY_QUERY_URL);
   query.searchParams.set("where", where);
@@ -3181,11 +3384,14 @@ async function buildCountryPolygonsFromCsv(csvGeojson, csvInfo) {
   query.searchParams.set("outSR", "4326");
   query.searchParams.set("f", "geojson");
   const boundaryPayload = await fetchJsonWithLimits(query.href, "UN country boundaries");
-  const boundaryFeatures = Array.isArray(boundaryPayload?.features) ? boundaryPayload.features : [];
-  const boundaries = boundaryFeatures.map(feature => {
-    const boundaryProperties = feature?.properties || {};
-    const iso3 = getPropertyByNormalizedKey(boundaryProperties, "ISO3CD");
-    const country = getPropertyByNormalizedKey(boundaryProperties, "ROMNAM") || iso3;
+  if (!Array.isArray(boundaryPayload?.features)) {
+    const detail = sanitizePlainText(boundaryPayload?.error?.message || "");
+    throw new Error(`UN country boundaries response is invalid.${detail ? ` ${detail}` : ""}`);
+  }
+  const boundaries = boundaryPayload.features.map(feature => {
+    const properties = feature?.properties || {};
+    const iso3 = getPropertyByNormalizedKey(properties, "ISO3CD");
+    const country = getPropertyByNormalizedKey(properties, "ROMNAM") || iso3;
     return {
       country: sanitizePlainText(country),
       iso3: normalizeIsoJoinValue(iso3),
@@ -3204,19 +3410,23 @@ async function buildCountryPolygonsFromCsv(csvGeojson, csvInfo) {
     if (code) valuesByCode.set(code, properties);
   });
 
+  const matchedCodes = new Set();
   const features = boundaries.map(boundary => {
     const boundaryCode = normalizeCsvCountryCode(boundary?.iso3 || "", "iso3");
     const boundaryCountry = normalizeCountryName(boundary?.country || "");
-    let csvProperties = boundaryCode ? valuesByCode.get(boundaryCode) : null;
+    let matchedCode = boundaryCode;
+    let csvProperties = matchedCode ? valuesByCode.get(matchedCode) : null;
     if (!csvProperties && boundaryCountry) {
       for (const [code, country] of codeToCountry) {
         if (country === boundaryCountry && valuesByCode.has(code)) {
           csvProperties = valuesByCode.get(code);
+          matchedCode = code;
           break;
         }
       }
     }
     if (!csvProperties) return null;
+    matchedCodes.add(matchedCode);
     const properties = Object.create(null);
     properties.country = boundary.country;
     properties.iso2 = boundary.iso2;
@@ -3232,19 +3442,15 @@ async function buildCountryPolygonsFromCsv(csvGeojson, csvInfo) {
     };
   }).filter(Boolean);
 
-  if (!features.length) return null;
-  const matchedCodes = new Set(features.map(f => normalizeCsvCountryCode(f?.properties?.iso3 || "", "iso3")));
-  const boundaryUnmatchedCodes = requestedIso3.filter(code => !matchedCodes.has(code));
-  const combinedUnmatchedValues = Array.from(new Set([
-    ...(csvInfo.unmatchedIsoValues || []),
-    ...boundaryUnmatchedCodes
-  ]));
+  requestedIso3.forEach(code => {
+    if (!matchedCodes.has(code)) unmatchedValues.add(code);
+  });
   return {
     type: "FeatureCollection",
     features,
     __rmaCsvImport: {
-      unmatchedRowCount: (csvInfo.unmatchedRowCount || 0) + boundaryUnmatchedCodes.length,
-      unmatchedIsoValues: combinedUnmatchedValues,
+      unmatchedRowCount: (csvInfo.unmatchedRowCount || 0) + (requestedIso3.length - matchedCodes.size),
+      unmatchedIsoValues: Array.from(unmatchedValues).filter(Boolean),
       valueKeys: csvInfo.valueKeys,
       preferredAttribute: csvInfo.preferredAttribute || ""
     }
@@ -3325,38 +3531,46 @@ function parseCsvToGeojson(csvText, sourceLabel = "CSV") {
       throw new Error(`CSV contains a blocked column name: ${String(key)}`);
     }
   });
-  const latKey = keys.find(k => /lat/i.test(String(k)));
-  const lonKey = keys.find(k => /lon|lng|long/i.test(String(k)));
+  const { latKeys, lonKeys } = getCsvCoordinateKeys(keys);
+  if (latKeys.length > 1 || lonKeys.length > 1) {
+    throw new Error("CSV has ambiguous latitude or longitude columns. Keep one of each.");
+  }
+  const latKey = latKeys[0];
+  const lonKey = lonKeys[0];
   const isoKey = getCsvIsoKey(keys);
   const hasCoordinates = !!(latKey && lonKey);
   if (!hasCoordinates && !isoKey) {
     throw new Error("CSV must have latitude/longitude columns or an ISO3 code column.");
   }
-  const isoFamily = isoKey ? getIsoCodeFamily(isoKey) : "";
   const resolvedIsoFamily = isoKey ? "iso3" : "";
+  const unmatchedIsoValues = new Set();
+  
+  // Capture all ISO3 values that don't match the expected format
+  if (!hasCoordinates && isoKey) {
+    rows.forEach(row => {
+      const rawIso = row?.[isoKey] ?? "";
+      const value = normalizeIsoJoinValue(rawIso);
+      if (!/^[A-Z]{3}$/.test(value)) {
+        unmatchedIsoValues.add(String(rawIso).trim() || "(empty)");
+      }
+    });
+  }
+  
   const validIsoRows = !hasCoordinates && isoKey
     ? rows.filter(row => {
         const value = normalizeIsoJoinValue(row?.[isoKey]);
         return /^[A-Z]{3}$/.test(value);
       })
     : rows;
-  const unmatchedIsoValues = !hasCoordinates && isoKey
-    ? Array.from(new Set(
-        rows
-          .filter(row => !/^[A-Z]{3}$/.test(normalizeIsoJoinValue(row?.[isoKey])))
-          .map(row => String(row?.[isoKey] ?? "").trim())
-          .filter(Boolean)
-      ))
-    : [];
-
   if (!hasCoordinates && isoKey && !validIsoRows.length) {
     throw new Error("No CSV rows contained valid three-letter ISO3 country codes.");
   }
-
   const features = validIsoRows.map((r, rowIdx) => {
     if (!hasCoordinates && isoKey) {
-      const iso = normalizeIsoJoinValue(r?.[isoKey]);
-      if (!/^[A-Z]{3}$/.test(iso)) return null;
+      const rawIso = r?.[isoKey] ?? "";
+      if (typeof rawIso === "string" && rawIso.length > MAX_CSV_CELL_LENGTH) {
+        throw new Error(`CSV cell in column "${String(isoKey)}" is too long.`);
+      }
       return {
         type: "Feature",
         geometry: null,
@@ -3382,10 +3596,10 @@ function parseCsvToGeojson(csvText, sourceLabel = "CSV") {
     geojson.__rmaCsvImport = {
       isoKey,
       isoFamily: resolvedIsoFamily,
+      unmatchedIsoValues: Array.from(unmatchedIsoValues).filter(Boolean),
       valueKeys: keys.filter(key => key !== isoKey),
       preferredAttribute: chooseCsvThematicKey(validIsoRows, keys, isoKey),
-      unmatchedRowCount: Math.max(0, rows.length - validIsoRows.length),
-      unmatchedIsoValues
+      unmatchedRowCount: Math.max(0, rows.length - validIsoRows.length)
     };
   }
   return geojson;
@@ -3416,7 +3630,7 @@ async function addImportedLayer(geojson, rawName, sourceLabel) {
     throw new Error("Import canceled by user.");
   }
 
-  const safeName = sanitizeName(rawName);
+  const safeName = uniqueLayerName(sanitizeName(rawName));
   const fg = L.featureGroup().addTo(map);
   geojsonLayer = L.geoJSON(geojson, {
     renderer: overlayRenderer,
@@ -3472,105 +3686,59 @@ function readFileAsArrayBuffer(file) {
 async function importFile(file) {
   const fileNameEl = document.getElementById("file-name");
   const ext = getDataExtension(file?.name || "");
-  const allowedExtensions = new Set([".zip", ".csv", ".geojson"]);
-  if (!allowedExtensions.has(ext)) {
-    throw new Error(`Unsupported file type: ${file?.name || "unknown file"}`);
-  }
-  if (file.size > MAX_SIZE) {
-    const maxMb = Math.round(MAX_SIZE / (1024 * 1024));
-    throw new Error(`File "${file.name}" too large (max ${maxMb} MB).`);
-  }
-
+  if (!(new Set([".zip", ".csv", ".geojson"])).has(ext)) throw new Error(`Unsupported file type: ${file?.name || "unknown file"}`);
+  if (file.size > MAX_SIZE) throw new Error(`File "${file.name}" too large (max ${Math.round(MAX_SIZE / (1024 * 1024))} MB).`);
   showLoading("Loading data from file...");
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   try {
     let geojson;
-    if (ext === ".zip") {
-      const bytes = await readFileAsArrayBuffer(file);
-      inspectZipSafety(bytes, file.size);
-      geojson = await shp(bytes);
-    } else {
-      const text = await readFileAsText(file);
-      geojson = parseImportedData(ext, text, ext === ".geojson" ? "application/json" : "text/csv");
-    }
-
+    if (ext === ".zip") { const bytes = await readFileAsArrayBuffer(file); inspectZipSafety(bytes, file.size); geojson = await shp(bytes); }
+    else { const text = await readFileAsText(file); geojson = parseImportedData(ext, text, ext === ".geojson" ? "application/json" : "text/csv"); }
     if (ext === ".csv" && geojson.__rmaCsvImport) {
       const csvMeta = geojson.__rmaCsvImport;
-      const countryGeojson = await buildCountryPolygonsFromCsv(geojson, csvMeta);
-      if (!countryGeojson) {
-        throw new Error("No CSV ISO codes matched the global country reference.");
-      }
-      geojson = countryGeojson;
+      geojson = await buildCountryPolygonsFromCsv(geojson, csvMeta);
+      if (!geojson.features.length) throw new Error("No CSV ISO codes matched the global country boundaries.");
       const finalMeta = geojson.__rmaCsvImport || csvMeta;
-      const unmatchedCount = Number(finalMeta.unmatchedRowCount || 0);
       const unmatchedValues = Array.isArray(finalMeta.unmatchedIsoValues) ? finalMeta.unmatchedIsoValues : [];
-      if (unmatchedCount > 0) {
-        showUnmatchedCodesModal(unmatchedValues, geojson.features.length);
-      } else {
-        showPopup("Mapped valid ISO3 rows successfully.", "success");
-      }
+      if (Number(finalMeta.unmatchedRowCount || 0) > 0) showUnmatchedCodesModal(unmatchedValues, geojson.features.length);
+      else showPopup("Mapped valid ISO3 rows successfully.", "success");
     }
-
     const safeName = await addImportedLayer(geojson, file.name, "Imported file");
     if (fileNameEl) fileNameEl.textContent = safeName;
-    if (!ext || ext !== ".csv") {
-      showPopup(`File "${safeName}" uploaded successfully`, "success");
-    }
-  } finally {
-    hideLoading();
-  }
+    if (ext !== ".csv") showPopup(`File "${safeName}" uploaded successfully`, "success");
+  } finally { hideLoading(); }
 }
 
 async function importUrl(rawUrl) {
   const fileNameEl = document.getElementById("file-name");
   const urlInput = document.getElementById("geojson-url");
   if (!rawUrl) throw new Error("Enter a valid URL");
-
   showLoading("Loading data from URL...");
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   try {
     const { parsed, ext: requestedExt } = validateImportUrl(rawUrl);
-    const fetched = await fetchWithLimits(parsed.href);
+    const fetched = await fetchWithLimits(parsed.href, true);
     const finalParsed = assertFinalImportUrlAllowed(fetched.finalUrl);
     const ext = resolveRemoteImportExtension(requestedExt, finalParsed?.pathname || fetched.finalUrl || "", fetched.contentType);
-    if (!ext) {
-      throw new Error("Could not determine URL import type. Use a .csv/.geojson URL or a correct JSON/CSV content type.");
-    }
-    const hasAllowedContentType = isAllowedRemoteContentType(ext, fetched.contentType);
-    const csvPayloadFallbackAllowed = ext === ".csv" && isLikelyCsvPayload(fetched.text || "");
-    if (!hasAllowedContentType && !csvPayloadFallbackAllowed) {
-      throw new Error(`Remote content type is not allowed for ${ext} import.`);
-    }
+    if (!ext) throw new Error("Could not determine URL import type. Use a .csv/.geojson URL or a correct JSON/CSV content type.");
+    if (!isAllowedRemoteContentType(ext, fetched.contentType) && !(ext === ".csv" && isLikelyCsvPayload(fetched.text || ""))) throw new Error(`Remote content type is not allowed for ${ext} import.`);
     const fallbackName = parsed.pathname.split("/").pop() || ("Layer_" + Date.now());
     let geojson = parseImportedData(ext, fetched.text || "", fetched.contentType || "");
     if (ext === ".csv" && geojson.__rmaCsvImport) {
       const csvMeta = geojson.__rmaCsvImport;
-      const countryGeojson = await buildCountryPolygonsFromCsv(geojson, csvMeta);
-      if (!countryGeojson) {
-        throw new Error("No CSV ISO codes matched the global country reference.");
-      }
-      geojson = countryGeojson;
+      geojson = await buildCountryPolygonsFromCsv(geojson, csvMeta);
+      if (!geojson.features.length) throw new Error("No CSV ISO codes matched the global country boundaries.");
       const finalMeta = geojson.__rmaCsvImport || csvMeta;
-      const unmatchedCount = Number(finalMeta.unmatchedRowCount || 0);
       const unmatchedValues = Array.isArray(finalMeta.unmatchedIsoValues) ? finalMeta.unmatchedIsoValues : [];
-      if (unmatchedCount > 0) {
-        showUnmatchedCodesModal(unmatchedValues, geojson.features.length);
-      } else {
-        showPopup("Mapped valid ISO3 rows successfully.", "success");
-      }
+      if (Number(finalMeta.unmatchedRowCount || 0) > 0) showUnmatchedCodesModal(unmatchedValues, geojson.features.length);
+      else showPopup("Mapped valid ISO3 rows successfully.", "success");
     }
-
     const safeName = await addImportedLayer(geojson, fallbackName, "Imported URL data");
     if (urlInput) urlInput.value = "";
     if (fileNameEl) fileNameEl.textContent = safeName;
-    if (!ext || ext !== ".csv") {
-      showPopup(`Layer "${safeName}" added successfully`, "success");
-    }
-  } finally {
-    hideLoading();
-  }
+    if (ext !== ".csv") showPopup(`Layer "${safeName}" added successfully`, "success");
+  } finally { hideLoading(); }
 }
-
 // --- File Upload Handler (secure) ---
 const fileUploadEl = document.getElementById("file-upload");
 if (fileUploadEl) {
@@ -3578,7 +3746,8 @@ if (fileUploadEl) {
     const files = Array.from(evt?.target?.files || []);
     for (const file of files) {
       try {
-        await importFile(file);
+        const unmatched = await importFile(file);
+        if (unmatched) await showUnmatchedCodesModal(unmatched.codes, unmatched.matchedCount);
       } catch (err) {
         console.error("File import error:", err);
         showPopup(String(err?.message || "Error loading file"), "error");
@@ -3595,7 +3764,8 @@ if (addGeojsonUrlEl) {
   addGeojsonUrlEl.addEventListener("click", async function() {
     const rawUrl = document.getElementById("geojson-url")?.value.trim() || "";
     try {
-      await importUrl(rawUrl);
+      const unmatched = await importUrl(rawUrl);
+      if (unmatched) await showUnmatchedCodesModal(unmatched.codes, unmatched.matchedCount);
     } catch (err) {
       console.error("Data load error:", err);
       showPopup("Error loading data: " + String(err?.message || err), "error");
@@ -3628,7 +3798,8 @@ function refreshLayerSelector() {
     sel.appendChild(o);
   });
 
-  if (orderedNames.length > 0) sel.value = orderedNames[0];
+  if (currentLayerName && orderedNames.includes(currentLayerName)) sel.value = currentLayerName;
+  else if (orderedNames.length > 0) sel.value = orderedNames[0];
   Object.keys(overlayData).length ? showRow(wrap) : hideRow(wrap);
 }
 
@@ -3752,10 +3923,13 @@ async function populateFilterControls(data) {
   if (!contSel) return;
 
   let fields = detectFilterFields(data);
-  activeContinentField = fields.continentKey || ensureSyntheticContinentField(data);
+  activeContinentField = fields.continentKey;
   activeCountryField = fields.countryKey;
+  let inferenceUnavailable = false;
   try {
     const hasSpatial = await ensureSpatialCountryContinentFields(data);
+    if (geojsonData !== data) return;
+    inferenceUnavailable = !worldBoundaryIndex || !worldBoundaryIndex.length;
     if (hasSpatial) {
       // Prefer schema-independent spatial fields when available so continent/country
       // options are consistent across CSV/GeoJSON/SHP and not limited by source schema.
@@ -3763,12 +3937,15 @@ async function populateFilterControls(data) {
       activeCountryField = "__rma_country";
     } else if (!activeContinentField || !activeCountryField) {
       fields = detectFilterFields(data);
-      activeContinentField = fields.continentKey || ensureSyntheticContinentField(data);
+      activeContinentField = fields.continentKey;
       activeCountryField = fields.countryKey;
     }
   } catch (e) {
     console.warn("Spatial country/continent inference unavailable:", e);
+    if (geojsonData !== data) return;
+    inferenceUnavailable = true;
   }
+  filterInferenceUnavailable = inferenceUnavailable;
   selectedContinentValues = new Set();
   selectedCountryValues = new Set();
 
@@ -3862,6 +4039,8 @@ async function setActiveLayer(name) {
   geojsonData = obj.geojson;
   layerGroup  = obj.layerGroup;
   currentAttribute = obj.preferredAttribute || null;
+  numericUserColors = obj.isNumeric && Array.isArray(obj.cols) ? obj.cols.slice() : null;
+  categoricalUserColors = !obj.isNumeric && Array.isArray(obj.cols) ? obj.cols.slice() : null;
 
   try {
     if (geojsonData && geojsonData.type === "FeatureCollection") {
@@ -3871,6 +4050,15 @@ async function setActiveLayer(name) {
       updatePointSizeControl();
       updateLineWidthControl();
       updateClassificationOptions();
+      const classType = document.getElementById('classification-type');
+      if (classType && obj.classificationType &&
+          Array.from(classType.options).some((option) => option.value === obj.classificationType)) {
+        classType.value = obj.classificationType;
+      }
+      const numClasses = document.getElementById('num-classes');
+      if (numClasses && Number.isInteger(obj.numClasses)) {
+        numClasses.value = String(obj.numClasses);
+      }
       // Do not force classification; apply only if attribute already selected
       if (currentAttribute) applyClassification();
       else renderDefaultFilteredLayer();
@@ -3929,6 +4117,12 @@ function populateAttributeList(data) {
     if (currentAttribute && k === currentAttribute) o.selected = true;
     sel.appendChild(o);
   });
+  if (currentAttribute) {
+    const selectedKey = attributeKeys.find((key) => key === currentAttribute);
+    if (selectedKey !== undefined) {
+      sel.value = String(selectedKey).replace(/[^\w\-]/g, "_");
+    }
+  }
 
   showRow(wrap);
 }
@@ -3998,6 +4192,9 @@ function applyClassification() {
   const sel = document.getElementById('classification-type');
   if (!sel) return;
   const method = sel.value;
+  if (overlayData[currentLayerName]) {
+    overlayData[currentLayerName].classificationType = method;
+  }
 
   if (!currentAttribute) {
     console.warn("No attribute selected for classification");
@@ -4013,7 +4210,31 @@ function applyClassification() {
 
   if (!vals.length) {
     console.warn("No valid values found for classification");
-    refreshStyles();
+    if (layerGroup && typeof layerGroup.clearLayers === 'function') {
+      layerGroup.clearLayers();
+      if (filteredGeojson.features.length) {
+        geojsonLayer = L.geoJSON(filteredGeojson, {
+          renderer: overlayRenderer,
+          interactive: true,
+          bubblingMouseEvents: false,
+          style: defaultStyle,
+          pointToLayer: defaultPoint,
+          onEachFeature: bindFeaturePopup
+        }).addTo(layerGroup);
+        const state = overlayData[currentLayerName];
+        const savedLabels = state?.legendLabels;
+        if (state) state.legendLabels = ["No data"];
+        const geometry = filteredGeojson.features[0]?.geometry?.type || "";
+        const color = /^#[0-9A-Fa-f]{6}$/.test(state?.defaultSymbolColor || "")
+          ? state.defaultSymbolColor
+          : (/LineString/.test(geometry) ? "#007aff" : "#ccc");
+        updateLegend(currentLayerName, ["No data"], [color], false, filteredGeojson);
+        if (state) state.legendLabels = savedLabels;
+        const warning = document.getElementById("filter-warning");
+        if (warning) warning.textContent += (warning.textContent ? " " : "") +
+          "The selected attribute has no values in the filtered features; default symbols are shown.";
+      }
+    }
     return;
   }
 
@@ -4186,6 +4407,7 @@ function applyClassification() {
       overlayData[currentLayerName].vals = breaks;
       overlayData[currentLayerName].cols = cols;
       overlayData[currentLayerName].isNumeric = true;
+      overlayData[currentLayerName].numClasses = n;
       overlayData[currentLayerName].legendGeomType = filteredGeojson?.features?.[0]?.geometry?.type || overlayData[currentLayerName].legendGeomType || 'Polygon';
     }
 
@@ -4481,6 +4703,10 @@ function updateCustomBreaks() {
       } else {
         currentAttribute = selected;
       }
+      if (overlayData[currentLayerName]) {
+        overlayData[currentLayerName].preferredAttribute = currentAttribute;
+      }
+      refreshLegendTitle(currentLayerName);
       updateClassificationOptions();
       applyClassification();
     });
@@ -4490,6 +4716,9 @@ function updateCustomBreaks() {
   const classType = document.getElementById('classification-type');
   if (classType) {
     classType.addEventListener('change', () => {
+      if (overlayData[currentLayerName]) {
+        overlayData[currentLayerName].classificationType = classType.value;
+      }
       applyClassification();
     });
   }
@@ -4636,53 +4865,26 @@ function showPopup(msg, type = "error") {
 function showUnmatchedCodesModal(codes, matchedCount) {
   const overlay = document.getElementById("unmatched-codes-overlay");
   const textarea = document.getElementById("unmatched-codes-textarea");
-  const desc = document.getElementById("unmatched-codes-desc");
-  if (!overlay || !textarea) return;
+  const description = document.getElementById("unmatched-codes-desc");
+  const status = document.getElementById("unmatched-codes-status");
+  const copyButton = document.getElementById("unmatched-codes-copy");
+  const closeButton = document.getElementById("unmatched-codes-close");
+  const dismissButton = document.getElementById("unmatched-codes-dismiss");
+  if (!overlay || !textarea || !description || !status || !copyButton || !closeButton || !dismissButton) throw new Error("Unmatched ISO3 codes dialog is unavailable.");
   const list = Array.isArray(codes) ? codes.filter(Boolean) : [];
+  const previousFocus = document.activeElement;
   textarea.value = list.join("\n");
-  if (desc) {
-    desc.textContent = `Mapped ${Number(matchedCount) || 0} rows. ${list.length} code(s) could not be matched. Copy the list below to review or correct them.`;
-  }
+  description.textContent = `Mapped ${Number(matchedCount) || 0} country polygon(s). ${list.length} distinct value(s) could not be matched.`;
+  status.textContent = "";
+  overlay.hidden = false;
   overlay.classList.add("open");
+  textarea.focus();
+  const close = () => { overlay.classList.remove("open"); overlay.hidden = true; closeButton.removeEventListener("click", close); dismissButton.removeEventListener("click", close); copyButton.removeEventListener("click", copy); overlay.removeEventListener("click", dismissOnBackdrop); document.removeEventListener("keydown", dismissOnEscape); if (previousFocus?.focus) previousFocus.focus(); };
+  const dismissOnBackdrop = event => { if (event.target === overlay) close(); };
+  const dismissOnEscape = event => { if (event.key === "Escape") close(); };
+  const copy = async () => { try { if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(textarea.value); else { textarea.select(); if (!document.execCommand("copy")) throw new Error("Copy command failed."); } status.textContent = "Copied to clipboard."; } catch (error) { console.warn("Could not copy unmatched ISO3 values:", error); status.textContent = "Could not copy automatically. Select and copy the list manually."; textarea.focus(); textarea.select(); } };
+  closeButton.addEventListener("click", close); dismissButton.addEventListener("click", close); copyButton.addEventListener("click", copy); overlay.addEventListener("click", dismissOnBackdrop); document.addEventListener("keydown", dismissOnEscape);
 }
-
-function hideUnmatchedCodesModal() {
-  const overlay = document.getElementById("unmatched-codes-overlay");
-  if (overlay) overlay.classList.remove("open");
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const overlay = document.getElementById("unmatched-codes-overlay");
-  const closeBtn = document.getElementById("unmatched-codes-close");
-  const dismissBtn = document.getElementById("unmatched-codes-dismiss");
-  const copyBtn = document.getElementById("unmatched-codes-copy");
-  const textarea = document.getElementById("unmatched-codes-textarea");
-
-  [closeBtn, dismissBtn].forEach(btn => {
-    if (btn) btn.addEventListener("click", hideUnmatchedCodesModal);
-  });
-  if (overlay) {
-    overlay.addEventListener("click", (event) => {
-      if (event.target === overlay) hideUnmatchedCodesModal();
-    });
-  }
-  if (copyBtn && textarea) {
-    copyBtn.addEventListener("click", async () => {
-      try {
-        if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(textarea.value);
-        } else {
-          textarea.select();
-          document.execCommand("copy");
-        }
-        showPopup("Unmatched codes copied to clipboard", "success");
-      } catch (e) {
-        showPopup("Could not copy to clipboard. Select the text manually.", "error");
-      }
-    });
-  }
-});
-
 // --- Sidebar toggle helpers (buttons cached) ---
 const btnClassTable = document.getElementById('btnToggleClassTable');
 function toggleClassTable() {
@@ -5162,7 +5364,7 @@ window.addEventListener('load', resetInitialScrollPositions);
       ctx.font = font;
       lines = wrapCanvasText(ctx, content, maxWidth);
     } else {
-      const approxChars = Math.max(8, Math.floor(maxWidth / Math.max(5, Math.round(fontSize * 0.55))));
+      const approxChars = Math.max(8, Math.floor((maxWidth * 0.99) / Math.max(5, Math.round(fontSize * 0.55))));
       lines = [];
       let line = '';
       content.split(/\s+/).filter(Boolean).forEach((word) => {
@@ -5358,11 +5560,11 @@ window.addEventListener('load', resetInitialScrollPositions);
       exportMapH
     );
 
-    const scaleFontSize = Math.max(9, Math.min(13, Math.round(exportMapW * 0.008)));
+    const scaleFontSize = Math.max(10, Math.min(14, Math.round(exportMapW * 0.008) + 1));
     const scalePaddingX = Math.max(6, Math.round(scaleFontSize * 0.7));
     const scalePaddingY = Math.max(4, Math.round(scaleFontSize * 0.4));
     const scaleFont = `${scaleFontSize}px Segoe UI, sans-serif`;
-    const scaleMeasuredW = measureExportTextWidth(scaleText || 'Scale: --', scaleFont);
+    const scaleMeasuredW = measureExportTextWidth(scaleText || 'Scale 1: --', scaleFont);
     const scaleW = Math.max(90, Math.min(Math.round(exportMapW * 0.28), scaleMeasuredW + (scalePaddingX * 2)));
     const scaleH = Math.max(20, Math.round(scaleFontSize + (scalePaddingY * 2) + 2));
     const scalePosition = getElementExportNormalizedPosition(
@@ -5384,18 +5586,34 @@ window.addEventListener('load', resetInitialScrollPositions);
 
     let disclaimer = null;
     if (disclaimerText) {
-      const discFontSize = Math.max(10, Math.min(14, Math.round(exportMapW * 0.0085)));
+      const discFontSize = Math.max(11, Math.min(15, Math.round(exportMapW * 0.0085) + 1));
       const discPadding = Math.max(6, Math.round(discFontSize * 0.55));
-      const discMaxWidth = Math.max(160, Math.min(Math.round(exportMapW * 0.42), Math.round(exportMapW * 0.52)));
-      const discLayout = buildWrappedExportTextLayout(disclaimerText, {
+      const discMaxWidth = Math.max(250, Math.min(Math.round(exportMapW * 0.65), Math.round(exportMapW * 0.75)));
+      
+      let discLayout = buildWrappedExportTextLayout(disclaimerText, {
         fontSize: discFontSize,
         fontStyle: 'italic',
         fontFamily: 'Segoe UI, sans-serif',
-        maxWidth: Math.max(120, discMaxWidth - (discPadding * 2)),
+        maxWidth: Math.max(200, discMaxWidth - (discPadding * 2)),
         padding: discPadding,
         lineHeight: Math.round(discFontSize * 1.25),
-        maxLines: 5
+        maxLines: 6
       });
+      
+      // Ensure minimum 3 lines by reducing maxWidth if needed
+      if (discLayout.lines.length < 3) {
+        const targetWidth = Math.max(200, (discMaxWidth - (discPadding * 2)) * 0.6);
+        discLayout = buildWrappedExportTextLayout(disclaimerText, {
+          fontSize: discFontSize,
+          fontStyle: 'italic',
+          fontFamily: 'Segoe UI, sans-serif',
+          maxWidth: targetWidth,
+          padding: discPadding,
+          lineHeight: Math.round(discFontSize * 1.25),
+          maxLines: 6
+        });
+      }
+      
       const disclaimerPosition = getDisclaimerExportNormalizedPosition(mapEl, disclaimerEl);
       const discPos = resolveExportPositionFromNorm(
         disclaimerPosition.normX,
@@ -5410,7 +5628,7 @@ window.addEventListener('load', resetInitialScrollPositions);
         lines: discLayout.lines,
         x: discPos.x,
         y: discPos.y,
-        width: discLayout.width,
+        width: discLayout.width + 2,
         height: discLayout.height,
         padding: discLayout.padding,
         fontSize: discLayout.fontSize,
@@ -5431,7 +5649,7 @@ window.addEventListener('load', resetInitialScrollPositions);
         triangleH: Math.max(10, Math.round(northH * 0.24))
       },
       scale: {
-        text: scaleText || 'Scale: --',
+        text: scaleText || 'Scale 1: --',
         x: scalePos.x,
         y: scalePos.y,
         width: scaleW,
@@ -5600,6 +5818,7 @@ window.addEventListener('load', resetInitialScrollPositions);
     if (layout.disclaimer && layout.disclaimer.lines.length) {
       const discX = mapOffsetX + layout.disclaimer.x;
       const discY = mapOffsetY + layout.disclaimer.y;
+      
       const discBg = document.createElementNS(svgNS, 'rect');
       discBg.setAttribute('x', String(discX));
       discBg.setAttribute('y', String(discY));
@@ -5995,7 +6214,11 @@ window.addEventListener('load', resetInitialScrollPositions);
       styleEl.type = 'text/css';
       styleEl.textContent = `
         .export-title{font-size:20px !important;font-weight:600;margin:0 0 8px 0;line-height:1;text-align:center !important;display:block !important;width:100% !important}
+
         .export-map-wrapper .export-disclaimer-clone{font-size:10px !important;background:rgba(255,255,255,0.95) !important;padding:6px !important;word-break:break-word !important;display:inline-block !important;text-align:left !important;max-height:calc(1.25em * 6) !important;overflow:hidden !important;white-space:normal !important;line-height:1.25 !important}
+
+        .export-map-wrapper .export-disclaimer-clone{background:rgba(255,255,255,0.95) !important;padding:6px !important;word-break:break-word !important;display:inline-block !important;width:auto !important;text-align:left !important;max-height:calc(1.25em * 6) !important;overflow:hidden !important;white-space:normal !important;line-height:1.25 !important}
+
         .export-map-wrapper .export-north-arrow-clone{display:flex !important;align-items:center !important;justify-content:center !important;flex-direction:column !important}
         .export-map-wrapper .export-north-arrow-clone .north-arrow-symbol{display:block !important;width:100% !important;text-align:center !important;padding-top:0 !important;line-height:1 !important}
         .export-img{width:100%;height:auto;display:block}
@@ -6344,7 +6567,10 @@ window.addEventListener('load', resetInitialScrollPositions);
         octx.fillText(titleText, Math.round(outW / 2), Math.round(titleH / 2));
 
         octx.drawImage(normalizedMapCanvas, 0, titleH);
+
         // Anchor overlays to the actual (possibly letterboxed) map content rect, not the full normalized slot.
+
+
         drawFixedExportOverlaysToCanvas(octx, mapFit.x, titleH + mapFit.y, mapFit.width, mapFit.height);
 
         if (legendBlocks.length) {
@@ -6911,121 +7137,75 @@ function exportSVG() {
       // disclaimer rendered as pure SVG to avoid foreignObject inconsistencies
       const safeDisclaimer = safeText(disclaimerEl);
       if (safeDisclaimer) {
-        const discRect = disclaimerEl ? disclaimerEl.getBoundingClientRect() : null;
         const mapRect = mapEl ? mapEl.getBoundingClientRect() : null;
-        // Bound the disclaimer to the actual rendered map content, not the (possibly letterboxed) canvas slot.
-        const mapContentX = alignedContentOffsetX + mapFit.x;
-        const mapContentY = titleHeightPx + mapFit.y;
-        const mapContentW = mapFit.width;
-        const mapContentH = mapFit.height;
-        // Use the disclaimer's real on-screen offset (like the north arrow below), not a fixed constant.
-        const rawDiscX = discRect && mapRect
-          ? mapContentX + Math.round((((discRect.left - mapRect.left) * rawScaleX) - cropX - extraTrimX + rasterShiftX) * mapScaleX)
-          : mapContentX + Math.round((Math.max(6, Math.round(8 * rawScaleX)) + rasterShiftX) * mapScaleX);
-        // Clamp so a large negative raster shift or letterboxing can't push the box outside the visible map.
-        const discX = Math.max(mapContentX, Math.min(rawDiscX, mapContentX + mapContentW - 120 - marginPx));
-        const desiredWidth = discRect ? Math.round(discRect.width * rawScaleX * 1.18) : Math.round(230 * uiScale);
-        let discWidth = Math.max(
-          Math.round(120 * uiScale),
-          Math.min(desiredWidth, Math.max(120, mapContentX + mapContentW - discX - marginPx))
-        );
-        const fontSizeDisc = Math.max(8, Math.round(10 * uiScale));
-        const lineHeightDisc = Math.round(fontSizeDisc * 1.25);
+        const fontSizeDisc = Math.max(9, Math.round(11 * uiScale));
         const padding = Math.max(4, Math.round(5 * uiScale));
-        const maxLines = 5;
-        const avgCharWidth = Math.max(5, Math.round(fontSizeDisc * 0.5));
-        const maxCharsPerLine = Math.max(16, Math.floor((discWidth - (padding * 2)) / avgCharWidth));
-
-        const words = safeDisclaimer.split(/\s+/).filter(Boolean);
-        const lines = [];
-        let line = "";
-        for (let i = 0; i < words.length; i++) {
-          const candidate = line ? (line + " " + words[i]) : words[i];
-          if (candidate.length > maxCharsPerLine && line) {
-            lines.push(line);
-            line = words[i];
-            if (lines.length >= maxLines) break;
-          } else {
-            line = candidate;
-          }
-        }
-        if (lines.length < maxLines && line) lines.push(line);
-        const truncated = lines.length >= maxLines && words.join(" ").length > lines.join(" ").length;
-        if (truncated && lines.length) {
-          lines[lines.length - 1] = lines[lines.length - 1].replace(/[.,;:!? ]+$/, "") + "...";
-        }
-
-        // Tighten SVG disclaimer box width using measured rendered text width.
-        const mCanvas = document.createElement('canvas');
-        const mCtx = mCanvas.getContext('2d');
-        if (mCtx) mCtx.font = `${fontSizeDisc}px Segoe UI, sans-serif`;
-        const measuredTextWidth = lines.reduce((m, ln) => {
-          const w = mCtx ? Math.ceil(mCtx.measureText(ln).width) : Math.round(ln.length * avgCharWidth);
-          return Math.max(m, w);
-        }, 0);
-        const tightWidth = Math.max(Math.round(120 * uiScale), measuredTextWidth + (padding * 2));
-        discWidth = Math.min(discWidth, tightWidth);
-
-        const discHeight = (padding * 2) + (lines.length * lineHeightDisc);
-        let discY = discRect && mapRect
-          ? (() => {
-              const bottomCss = Math.max(0, mapRect.bottom - discRect.bottom);
-              const bottomPx = Math.max(0, Math.round(bottomCss * rawScaleY));
-              return Math.max(
-                mapContentY,
-                mapContentY + mapContentH - discHeight - bottomPx
-              );
-            })()
-          : (mapContentY + mapContentH - discHeight - marginPx);
-        const discYMin = mapContentY + 2;
-        const discYMax = Math.max(discYMin, (mapContentY + mapContentH - discHeight - 2));
-        discY = Math.max(discYMin, Math.min(discYMax, discY));
-
-        const discBg = document.createElementNS(svgNS, "rect");
-        discBg.setAttribute("x", String(discX));
-        discBg.setAttribute("y", String(discY));
-        discBg.setAttribute("width", String(discWidth));
-        discBg.setAttribute("height", String(discHeight));
-        discBg.setAttribute("fill", "#ffffff");
-        discBg.setAttribute("fill-opacity", "0.95");
-        svg.appendChild(discBg);
-
-        const discText = document.createElementNS(svgNS, "text");
-        discText.setAttribute("x", String(discX + padding));
-        discText.setAttribute("y", String(discY + padding + fontSizeDisc));
-        discText.setAttribute("font-size", String(fontSizeDisc));
-        discText.setAttribute("font-family", "Segoe UI, sans-serif");
-        discText.setAttribute("fill", "#000");
-        discText.setAttribute("text-anchor", "start");
-
-        lines.forEach((ln, idx) => {
-          const tspan = document.createElementNS(svgNS, "tspan");
-          tspan.setAttribute("x", String(discX + padding));
-          tspan.setAttribute("dy", idx === 0 ? "0" : String(lineHeightDisc));
-          const isLastLine = idx === lines.length - 1;
-          const shouldJustify = !isLastLine && !/\.\.\.$/.test(ln) && /\s/.test(ln);
-          if (shouldJustify) {
-            tspan.setAttribute("textLength", String(Math.max(1, discWidth - (padding * 2))));
-            tspan.setAttribute("lengthAdjust", "spacing");
-          }
-          tspan.textContent = ln;
-          discText.appendChild(tspan);
+        const discX = mapFit.x + Math.max(marginPx, Math.round((Math.max(6, Math.round(8 * rawScaleX)) + rasterShiftX) * mapScaleX));
+        const scaleRect = scaleBarEl?.getBoundingClientRect ? scaleBarEl.getBoundingClientRect() : null;
+        const scaleLeft = scaleRect && mapRect
+          ? mapFit.x + Math.round((((scaleRect.left - mapRect.left) * rawScaleX) - cropX - extraTrimX + rasterShiftX) * mapScaleX)
+          : mapFit.x + Math.round(mapFit.width * 0.42);
+        const availableDiscWidth = Math.max(200, Math.min(700, scaleLeft - discX - marginPx));
+        
+        // Ensure minimum 3 lines by reducing maxWidth if needed
+        let discLayout = buildWrappedExportTextLayout(safeDisclaimer, {
+          fontSize: fontSizeDisc,
+          fontStyle: "italic",
+          fontFamily: "Segoe UI, sans-serif",
+          maxWidth: Math.max(150, availableDiscWidth - (padding * 2)),
+          padding,
+          lineHeight: Math.round(fontSizeDisc * 1.25),
+          maxLines: 6
         });
-
+        
+        // If disclaimer has fewer than 3 lines, reduce maxWidth to force wrapping
+        if (discLayout.lines.length < 3) {
+          const targetWidth = Math.max(150, availableDiscWidth * 0.6);
+          discLayout = buildWrappedExportTextLayout(safeDisclaimer, {
+            fontSize: fontSizeDisc,
+            fontStyle: "italic",
+            fontFamily: "Segoe UI, sans-serif",
+            maxWidth: targetWidth - (padding * 2),
+            padding,
+            lineHeight: Math.round(fontSizeDisc * 1.25),
+            maxLines: 6
+          });
+        }
+        
+        const discWidth = Math.min(availableDiscWidth, discLayout.width + 2);
+        const lines = discLayout.lines;
+        const lineHeightDisc = discLayout.lineHeight;
+        const discHeight = discLayout.height;
+        const discY = Math.max(mapFit.y + marginPx, mapFit.y + mapFit.height - discHeight - marginPx);
+        const discBg = document.createElementNS(svgNS, "rect");
+        discBg.setAttribute("x", String(discX)); discBg.setAttribute("y", String(discY)); discBg.setAttribute("width", String(discWidth)); discBg.setAttribute("height", String(discHeight)); discBg.setAttribute("fill", "#ffffff"); discBg.setAttribute("fill-opacity", "0.95"); svg.appendChild(discBg);
+        const discText = document.createElementNS(svgNS, "text");
+        discText.setAttribute("x", String(discX + padding)); discText.setAttribute("y", String(discY + padding + fontSizeDisc)); discText.setAttribute("font-size", String(fontSizeDisc)); discText.setAttribute("font-family", "Segoe UI, sans-serif"); discText.setAttribute("fill", "#000");
+        lines.forEach((ln, idx) => { const tspan = document.createElementNS(svgNS, "tspan"); tspan.setAttribute("x", String(discX + padding)); tspan.setAttribute("dy", idx === 0 ? "0" : String(lineHeightDisc)); tspan.textContent = ln; discText.appendChild(tspan); });
         svg.appendChild(discText);
       }
-
       // north arrow (render from live control position)
       if (northArrowEl && mapEl) {
         const naRect = northArrowEl.getBoundingClientRect();
         const mapRect = mapEl.getBoundingClientRect();
         const naW = Math.max(1, Math.round(naRect.width * rawScaleX * mapScaleX));
         const naH = Math.max(1, Math.round(naRect.height * rawScaleY * mapScaleY));
-        const naX = Math.max(0, Math.round((((naRect.left - mapRect.left) * rawScaleX) - cropX - extraTrimX + rasterShiftX) * mapScaleX) + alignedContentOffsetX);
-        let naY = titleHeightPx + Math.max(0, Math.round((((naRect.top - mapRect.top) * rawScaleY) - cropY) * mapScaleY));
-        const naYMin = titleHeightPx + 2;
-        const naYMax = Math.max(naYMin, (titleHeightPx + usedCanvasHeight - naH - 2));
-        naY = Math.max(naYMin, Math.min(naYMax, naY));
+        const userMoved = northArrowEl.dataset.userMoved === "1";
+        const naPos = userMoved
+          ? resolveExportPositionFromNorm(
+              Number(northArrowEl.dataset.normX),
+              Number(northArrowEl.dataset.normY),
+              naW,
+              naH,
+              mapFit.width,
+              mapFit.height
+            )
+          : {
+              x: Math.max(0, mapFit.width - naW - NORTH_ARROW_MARGIN_PX),
+              y: Math.min(NORTH_ARROW_MARGIN_PX, Math.max(0, mapFit.height - naH))
+            };
+        const naX = mapFit.x + naPos.x;
+        const naY = titleHeightPx + mapFit.y + naPos.y;
 
         const naBg = document.createElementNS(svgNS, "rect");
         naBg.setAttribute("x", String(naX));
@@ -7070,7 +7250,7 @@ function exportSVG() {
         let sbX = Math.max(0, Math.round((((sbRect.left - mapRect.left) * rawScaleX) - cropX - extraTrimX + rasterShiftX) * mapScaleX) + alignedContentOffsetX);
         let sbY = titleHeightPx + Math.max(0, Math.round((((sbRect.top - mapRect.top) * rawScaleY) - cropY) * mapScaleY));
         sbY -= Math.max(2, Math.round(4 * uiScale));
-        const sbTextRaw = scaleBarEl.querySelector('.exact-scale-label')?.textContent || "Scale: --";
+        const sbTextRaw = scaleBarEl.querySelector('.exact-scale-label')?.textContent || "Scale 1: --";
         const sbText = String(sbTextRaw).slice(0, MAX_TEXT_LENGTH);
         const sbXMin = alignedContentOffsetX;
         const sbXMax = Math.max(sbXMin, alignedContentOffsetX + usedCanvasWidth - sbW - 2);
@@ -7093,7 +7273,7 @@ function exportSVG() {
         sbTextEl.setAttribute("x", String(sbX + Math.round(sbW / 2)));
         sbTextEl.setAttribute("y", String(sbY + Math.round(sbH / 2) + Math.round(3 * uiScale)));
         sbTextEl.setAttribute("text-anchor", "middle");
-        sbTextEl.setAttribute("font-size", String(Math.max(8, Math.round(8 * uiScale))));
+        sbTextEl.setAttribute("font-size", String(Math.max(9, Math.round(9 * uiScale))));
         sbTextEl.setAttribute("font-family", "Segoe UI, sans-serif");
         sbTextEl.setAttribute("font-weight", "400");
         sbTextEl.setAttribute("fill", "#102a43");
